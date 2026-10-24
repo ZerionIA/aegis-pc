@@ -1,0 +1,212 @@
+[
+  {
+    "Name": "BlackSharp.Core",
+    "Version": "1.0.7",
+    "Hash": "LbEc4w0oZ7w4p6+8OjPZgwsJW470aQRuYZgZ9aMN2PW9R79pW3OnZQ32AVVx/21rstX9mKbXaOLWpSAxoANYxQ=="
+  },
+  {
+    "Name": "DiskInfoToolkit",
+    "Version": "1.1.2",
+    "Hash": "vN46svt1hQDkm269p6CzfwDpb/fbyp8oNQuePcvjNSryPLfsxIJZU8amEhir+x5bsKd0ymOXTySzPwFO8o0dpw=="
+  },
+  {
+    "Name": "HidSharp",
+    "Version": "2.6.4",
+    "Hash": "UcGvtnXFcatwHBXr+ei8GEXvg//wjGmDGQ6Xvb+7M4vHjURAhSLIJ+dSZv0BnAhQEpNlH8G4P7JxYnMH8Aph4g=="
+  },
+  {
+    "Name": "LibreHardwareMonitorLib",
+    "Version": "0.9.6",
+    "Hash": "W4hQ5Ja51/1cEDZnh9kG5UHFBwjjY2+oIpSUhSsgeYXKRKezrkw3sEFrhQkrOuo53xkXyfWV8ZErMqQuGqWIMQ=="
+  },
+  {
+    "Name": "Microsoft.Data.Sqlite",
+    "Version": "10.0.0",
+    "Hash": "I/azQ5WjwoLvSlTyDydkhARPSjYJN8jkXRjR5D92OeyTLbTrQ1K93rgf6XU+HYWHZA6lBI9SUOfl69OqEHb4ow=="
+  },
+  {
+    "Name": "Microsoft.Data.Sqlite.Core",
+    "Version": "10.0.0",
+    "Hash": "wPKG/Ym6tSMCo06UOZXzVfeFGzawnOZrTba/R3PfK+RhNuNELZ9I7nFns4WGTtv2kKlrlmmErgJ+kgTXHaNdHg=="
+  },
+  {
+    "Name": "Mono.Posix.NETStandard",
+    "Version": "1.0.0",
+    "Hash": "vSN/L1uaVwKsiLa95bYu2SGkF0iY3xMblTfxc8alSziPuVfJpj3geVqHGAA75J7cZkMuKpFVikz82Lo6y6LLdA=="
+  },
+  {
+    "Name": "NAudio",
+    "Version": "2.2.1",
+    "Hash": "c0DzwiyyklM0TP39Y7RObwO3QkWecgM6H60ikiEnsV/aEAJPbj5MFCLaD8BSfKuZe0HGuh9GRGWWlJmSxDc9MA=="
+  },
+  {
+    "Name": "NAudio.Asio",
+    "Version": "2.2.1",
+    "Hash": "hQglyOT5iT3XuGpBP8ZG0+aoqwRfidHjTNehpoWwX0g6KJEgtH2VaqM2nuJ2mheKZa/IBqB4YQTZVvrIapzfOA=="
+  },
+  {
+    "Name": "NAudio.Core",
+    "Version": "2.2.1",
+    "Hash": "GgkdP6K/7FqXFo7uHvoqGZTJvW4z8g2IffhOO4JHaLzKCdDOUEzVKtveoZkCuUX8eV2HAINqi7VFqlFndrnz/g=="
+  },
+  {
+    "Name": "NAudio.Midi",
+    "Version": "2.2.1",
+    "Hash": "6r23ylGo5aeP02WFXsPquz0T0hFJWyh+7t++tz19tc3Kr38NHm+Z9j+FiAv+xkH8tZqXJqus9Q8p6u7bidIgbw=="
+  },
+  {
+    "Name": "NAudio.Wasapi",
+    "Version": "2.2.1",
+    "Hash": "lFfXoqacZZe0WqNChJgGYI+XV/n/61LzPHT3C1CJp4khoxeo2sziyX5wzNYWeCMNbsWxFvT3b3iXeY1UYjBhZw=="
+  },
+  {
+    "Name": "NAudio.WinForms",
+    "Version": "2.2.1",
+    "Hash": "DlDkewY1myY0A+3NrYRJD+MZhZV0yy1mNF6dckB27IQ9XCs/My5Ip8BZcoSHOsaPSe2GAjvoaDnk6N9w8xTv7w=="
+  },
+  {
+    "Name": "NAudio.WinMM",
+    "Version": "2.2.1",
+    "Hash": "xFHRFwH4x6aq3IxRbewvO33ugJRvZFEOfO62i7uQJRUNW2cnu6BeBTHUS0JD5KBucZbHZaYqxQG8dwZ47ezQuQ=="
+  },
+  {
+    "Name": "RAMSPDToolkit-NDD",
+    "Version": "1.4.2",
+    "Hash": "pqIwn/HqXFnW4FVKybq6gZh3YK14OOLGWkgZzDdewjAInCOu86EO2L+FCQo8j1/v1sKwv+vgX5pnehxyrlJYJw=="
+  },
+  {
+    "Name": "runtime.android-arm.runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "6W4qZX0X7FF+PHM9Kaa5ZsTLcGJAzCU7FB4Tjy1vTg2rUIEjDqijWTtpz8vY6gBzZaG+tD0/EKUyGnfq6d/d/Q=="
+  },
+  {
+    "Name": "runtime.android-arm64.runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "4OdNg2Du1kvm0b4tSErkA4wfH32YmgUqeSLzekk6NdCR61brCp4vttTJl0epZMwbRppXuy/jY7pV0WtP4ymnfQ=="
+  },
+  {
+    "Name": "runtime.android-x64.runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "nP7xJSDSqRktV4kEd0kr4n0xhzJFuQjh7L/AgrKB3C4QK5TA/8NimJmTl1ogngvnXn2vilH2Hk+keBIvuoGWCA=="
+  },
+  {
+    "Name": "runtime.android-x86.runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "f/neqijoVpgl/PcrXYeLNfCC2t74XYIcaHvtSaF3zaIdJ3hf5wrwRC9gzYLXHRLg/j4DRsCHEw8rlux/dNh7XA=="
+  },
+  {
+    "Name": "runtime.linux-arm.runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "cwiQmy95Zd42K4kMzDt8GkXNKHWDkRZIIyb3MteRrgJKubH2DMA6VY3JiFeR+1hQ7i31Ck+dYyt8wUkElZ/NrQ=="
+  },
+  {
+    "Name": "runtime.linux-arm64.runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "cEx+Xm0ZNPsuoYTFwXZ6qRstwXQ7vJjbb3jWzo5s5xIeEgpTDdfiUjTgK3Gl618mWgb7+Gn6Vt5pT07RxFC28Q=="
+  },
+  {
+    "Name": "runtime.linux-bionic-arm64.runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "kB21sNzlKgTj3V/LZhnTLFuViiGKtkiUG2GdEW+z3jdeUtRoxqBBXryzMqy0oUOy5idBW2pA6bh+iLGaj+GThA=="
+  },
+  {
+    "Name": "runtime.linux-bionic-x64.runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "/Ud7EYdpnBGJ/x7DdqVFEJOQtEcf9rsD6/1iyUBJNfhhs8JljZLewJHp1cXr1DVCaWWc9jSWIc4g+QpMct/22A=="
+  },
+  {
+    "Name": "runtime.linux-musl-arm.runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "pBubukkmXD9e4Ju004bEHL3TE5mYahONCVwrJ5b+7/cj8smSY2H5sKTyURiVF1EfX55yORKyTyQ3dALA5yTTlg=="
+  },
+  {
+    "Name": "runtime.linux-musl-arm64.runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "+FR6SvpZya66Wv26MVEK4l2gnjfZnBVUz675eaTcMQ/KWAy+GMaPyhRaBIMnQJf5gfuu3x1qgeAzpmeFkOPGBw=="
+  },
+  {
+    "Name": "runtime.linux-musl-x64.runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "Ee1XnOSKgeJGBcnd7LLLkyXEbE/JcpQ3pUlbPXqugl0YD55jVubpYebzGYI+ilrnBLCRiV0BR822b2XmerIKGw=="
+  },
+  {
+    "Name": "runtime.linux-x64.runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "U+Zr1KuBDIIwgR2gTMFbBAtkr4WnKdEXxmknPa3X8Qy6oCi4+MTRmq2zmTh7wxXQXTdmhfXg2tyy7DuVHtB+xQ=="
+  },
+  {
+    "Name": "runtime.maccatalyst-arm64.runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "9yTgh3ZKCBTGEO4YS76g/K15s2qSdeEZDqWteixUPeRsETsuBUwUPF39Fk39OPlRgwhqEuhtHy1Hf6BSOETfAg=="
+  },
+  {
+    "Name": "runtime.maccatalyst-x64.runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "0gxqUZYQ1T1o5VzgyEMKiSPKJtPbleF2nbjZa5QKZQvPgSlrZFL+FrW4LywIk2scOpXu+Vd5Mv8AGGV7slhYWA=="
+  },
+  {
+    "Name": "runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "7U3HW0JzAeg9PWaYBcyWLFMq2RSexgJ8uVCR3E2QVJJ/IZnRT0wYRhyEx3zBSbKYzN3KE6MDiRd6CN4hR7YkqA=="
+  },
+  {
+    "Name": "runtime.osx-arm64.runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "qnEjXlIazxaRAhBet0EupWoJQ9PKsXjThpMKGP/ZsCjZgHEb+zs9wft82wY27OagyPOCg9D4hJHWKt5LTbJNZg=="
+  },
+  {
+    "Name": "runtime.osx-x64.runtime.native.System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "L1gcOL5kcfeeujKQbqJmpeTLsT0c6DeaJ9w6PY9oZ+/WESyya+Zj7StKguXR5j93o3o86FjcN05yufpoCz7R2g=="
+  },
+  {
+    "Name": "SQLite",
+    "Version": "3.53.4",
+    "Hash": "KN7jeWqgUPeBRe1FlcpZURzxomuKKEKHmBBQfg+Nx7NkY1LjKhzHvH+3ASkNvhayESE34nMBinL9CV21JfPRJw=="
+  },
+  {
+    "Name": "SQLitePCLRaw.bundle_e_sqlite3",
+    "Version": "3.0.5",
+    "Hash": "SW8iASIyWMrLzqabUHYQRvALhvD4ylSBsj4PgEVGwc36kQjc9xT5kSV/XQ9rU7nIpBWD+LPyX3Hlw5FzyUzGeQ=="
+  },
+  {
+    "Name": "SQLitePCLRaw.config.e_sqlite3",
+    "Version": "3.0.5",
+    "Hash": "aSk8WE5tF2MybESMgtZAEyMVCAWA0nBqOMc48HFoa9UoSdtm3goDXVzNRnefeKIwE6bV9NaNXptn1F9ReMQI0Q=="
+  },
+  {
+    "Name": "SQLitePCLRaw.core",
+    "Version": "3.0.5",
+    "Hash": "k81AYXXRCw3Zj8rOhyBoCsx/U97KYDFI2CSKr/ijl5BwpsW/hX/4kBiDmerFaoust8nxBwa0IHQFw8MmSHRtnQ=="
+  },
+  {
+    "Name": "SQLitePCLRaw.provider.e_sqlite3",
+    "Version": "3.0.5",
+    "Hash": "um8YSWduhhuskTG2bHfZrBqMNQOydfU8pcseT+cu5RivOGyoUbCrGXxgoRNTmRYw2VbMWnEZVVFcneZT/5dsBg=="
+  },
+  {
+    "Name": "System.CodeDom",
+    "Version": "10.0.2",
+    "Hash": "eih1MnL4tnSjHUhzae0dmpu50Sm0s54faHZc8yhzYfmubAubkBIIulYYN28fasD1m41mhl6Cenhs9/F0aLv3FA=="
+  },
+  {
+    "Name": "System.IO.FileSystem.AccessControl",
+    "Version": "5.0.0",
+    "Hash": "SxHB3nuNrpptVk+vZ/F+7OHEpoHUIKKMl02bUmYHQr1r+glbZQxs7pRtsf4ENO29TVm2TH3AEeep2fJcy92oYw=="
+  },
+  {
+    "Name": "System.IO.Ports",
+    "Version": "10.0.3",
+    "Hash": "Zs04mZ/dQtaFQ+hpQNDtijBs+6aM9j2fQPp8zNZTfh8DboVNNv7Sw6gH00hT+PVcAhEozlfT+n59Svm6Ug8ROA=="
+  },
+  {
+    "Name": "System.Management",
+    "Version": "10.0.2",
+    "Hash": "eFftuy3i844lVKCb4lJvvjKfcvPVcW8KrAdSaIOcRL42/Fisj46hwUs8Bky+4avzMe5Snm5t7aSayOI1mybYXg=="
+  },
+  {
+    "Name": "System.Speech",
+    "Version": "10.0.0",
+    "Hash": "nHlCdjoeReiSx4kzgPEwPRlbOAyuVFwndXTZZT+CLnHb8UIfB+YMgpQjQ7faYvs3xU8wyvpb6dt+U+HwdlbG7w=="
+  }
+]
