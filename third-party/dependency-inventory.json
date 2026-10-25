@@ -35,41 +35,6 @@
     "Hash": "vSN/L1uaVwKsiLa95bYu2SGkF0iY3xMblTfxc8alSziPuVfJpj3geVqHGAA75J7cZkMuKpFVikz82Lo6y6LLdA=="
   },
   {
-    "Name": "NAudio",
-    "Version": "2.2.1",
-    "Hash": "c0DzwiyyklM0TP39Y7RObwO3QkWecgM6H60ikiEnsV/aEAJPbj5MFCLaD8BSfKuZe0HGuh9GRGWWlJmSxDc9MA=="
-  },
-  {
-    "Name": "NAudio.Asio",
-    "Version": "2.2.1",
-    "Hash": "hQglyOT5iT3XuGpBP8ZG0+aoqwRfidHjTNehpoWwX0g6KJEgtH2VaqM2nuJ2mheKZa/IBqB4YQTZVvrIapzfOA=="
-  },
-  {
-    "Name": "NAudio.Core",
-    "Version": "2.2.1",
-    "Hash": "GgkdP6K/7FqXFo7uHvoqGZTJvW4z8g2IffhOO4JHaLzKCdDOUEzVKtveoZkCuUX8eV2HAINqi7VFqlFndrnz/g=="
-  },
-  {
-    "Name": "NAudio.Midi",
-    "Version": "2.2.1",
-    "Hash": "6r23ylGo5aeP02WFXsPquz0T0hFJWyh+7t++tz19tc3Kr38NHm+Z9j+FiAv+xkH8tZqXJqus9Q8p6u7bidIgbw=="
-  },
-  {
-    "Name": "NAudio.Wasapi",
-    "Version": "2.2.1",
-    "Hash": "lFfXoqacZZe0WqNChJgGYI+XV/n/61LzPHT3C1CJp4khoxeo2sziyX5wzNYWeCMNbsWxFvT3b3iXeY1UYjBhZw=="
-  },
-  {
-    "Name": "NAudio.WinForms",
-    "Version": "2.2.1",
-    "Hash": "DlDkewY1myY0A+3NrYRJD+MZhZV0yy1mNF6dckB27IQ9XCs/My5Ip8BZcoSHOsaPSe2GAjvoaDnk6N9w8xTv7w=="
-  },
-  {
-    "Name": "NAudio.WinMM",
-    "Version": "2.2.1",
-    "Hash": "xFHRFwH4x6aq3IxRbewvO33ugJRvZFEOfO62i7uQJRUNW2cnu6BeBTHUS0JD5KBucZbHZaYqxQG8dwZ47ezQuQ=="
-  },
-  {
     "Name": "RAMSPDToolkit-NDD",
     "Version": "1.4.2",
     "Hash": "pqIwn/HqXFnW4FVKybq6gZh3YK14OOLGWkgZzDdewjAInCOu86EO2L+FCQo8j1/v1sKwv+vgX5pnehxyrlJYJw=="
@@ -203,10 +168,5 @@
     "Name": "System.Management",
     "Version": "10.0.2",
     "Hash": "eFftuy3i844lVKCb4lJvvjKfcvPVcW8KrAdSaIOcRL42/Fisj46hwUs8Bky+4avzMe5Snm5t7aSayOI1mybYXg=="
-  },
-  {
-    "Name": "System.Speech",
-    "Version": "10.0.0",
-    "Hash": "nHlCdjoeReiSx4kzgPEwPRlbOAyuVFwndXTZZT+CLnHb8UIfB+YMgpQjQ7faYvs3xU8wyvpb6dt+U+HwdlbG7w=="
   }
 ]

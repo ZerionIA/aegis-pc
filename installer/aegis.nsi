@@ -4,7 +4,10 @@ Name "Aegis Bêta"
 !ifndef PACKAGE_DIR
  !define PACKAGE_DIR "..\artifacts\release"
 !endif
-OutFile "..\artifacts\Aegis-0.2.0-beta.2-Setup.exe"
+!ifndef APP_VERSION
+ !define APP_VERSION "0.3.0-beta.1"
+!endif
+OutFile "..\artifacts\Aegis-${APP_VERSION}-Setup.exe"
 InstallDir "$LOCALAPPDATA\Programs\Aegis"
 RequestExecutionLevel user
 SetCompressor zlib
@@ -52,6 +55,10 @@ FunctionEnd
 
 Section "Aegis"
  SetOutPath "$INSTDIR"
+ Delete "$INSTDIR\NAudio*.dll"
+ Delete "$INSTDIR\System.Speech.dll"
+ RMDir /r "$INSTDIR\tools\ollama"
+ RMDir /r "$INSTDIR\tools\whisper"
  File /r /x models /x *.pdb /x .staging /x *.tmp /x .aegis-running.lock "${PACKAGE_DIR}\*"
  WriteUninstaller "$INSTDIR\Uninstall.exe"
  CreateDirectory "$SMPROGRAMS\Aegis"
@@ -59,7 +66,7 @@ Section "Aegis"
  CreateShortcut "$DESKTOP\Aegis.lnk" "$INSTDIR\Aegis.exe"
  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Aegis" "DisplayName" "Aegis (Bêta)"
  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Aegis" "UninstallString" '"$INSTDIR\Uninstall.exe"'
- WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Aegis" "DisplayVersion" "0.2.0-beta.2"
+ WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Aegis" "DisplayVersion" "${APP_VERSION}"
  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Aegis" "Publisher" "Aegis contributors"
  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Aegis" "DisplayIcon" "$INSTDIR\Aegis.exe"
 SectionEnd

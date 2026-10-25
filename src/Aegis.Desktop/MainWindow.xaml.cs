@@ -10,7 +10,7 @@ public partial class MainWindow : Window
     private bool cleaned;
     public MainWindow()
     {
-        InitializeComponent();DataContext=model;
+        InitializeComponent();DataContext=model;model.UpdateInstallationRequested+=()=>Close();
         Loaded+=async(_,_)=>
         {
             try{await model.InitializeAsync();}catch(Exception e){MessageBox.Show(e.Message,"Aegis");}
@@ -18,10 +18,10 @@ public partial class MainWindow : Window
             if(i>=0&&i+1<args.Length)
             {
                 await Task.Delay(7000);
-                if(args.Contains("--assistant"))model.AssistantCommand.Execute(null);
+                if(args.Contains("--discover"))model.DiscoverCommand.Execute(null);
+                if(args.Contains("--light"))model.Theme="Light";
                 if(args.Contains("--settings")){model.SettingsCommand.Execute(null);model.AlertsEnabled=true;model.RamThreshold=1;await Task.Delay(5000);if(model.AlertHistory.Count==0)throw new InvalidOperationException("Smoke: no alert after three real RAM samples.");}
                 if(args.Contains("--widget"))model.WidgetCommand.Execute(null);
-                if(args.Contains("--ai"))await model.SmokeAssistantAsync();
                 if(args.Contains("--sessions"))
                 {
                     model.SessionName="Vérification locale";

@@ -9,7 +9,7 @@ Sources officielles consultées le 24 octobre 2026. Offres susceptibles d'évolu
 | Surveillance distante | La même grille HWiNFO distingue durées et machines selon les licences | Non implémentée |
 | Sessions et exports | Plusieurs outils en proposent déjà gratuitement | Sessions, comparaison descriptive, CSV/HTML gratuits |
 | Alertes | Ni exclusives ni nécessairement payantes ailleurs | Seuils personnels, historique et marqueurs gratuits |
-| Assistant local | Les sources citées ne prouvent pas son absence chez tous les concurrents | Bilan calculé sans modèle ; dialogue et voix facultatifs |
+| Thèmes et mises à jour | Les offres varient selon les outils | Trois thèmes, vérification et téléchargement des releases ; installation confirmée |
 
 Positionnement : lisibilité des sessions, gratuité et données locales. Aucun code propriétaire, visuel ou binaire concurrent repris. Ne pas promettre de remplacer tous leurs capteurs, benchmarks et stress tests.
 

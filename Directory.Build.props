@@ -7,8 +7,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <Deterministic>true</Deterministic>
-    <VersionPrefix>0.2.0</VersionPrefix>
-    <VersionSuffix>beta.2</VersionSuffix>
+    <VersionPrefix>0.3.0</VersionPrefix>
+    <VersionSuffix>beta.1</VersionSuffix>
     <Product>Aegis</Product>
     <Copyright>Aegis contributors</Copyright>
     <SatelliteResourceLanguages>fr</SatelliteResourceLanguages>

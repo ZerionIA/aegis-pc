@@ -2,12 +2,6 @@
   "version": 1,
   "dependencies": {
     "net10.0-windows7.0": {
-      "System.Speech": {
-        "type": "Direct",
-        "requested": "[10.0.0, )",
-        "resolved": "10.0.0",
-        "contentHash": "nHlCdjoeReiSx4kzgPEwPRlbOAyuVFwndXTZZT+CLnHb8UIfB+YMgpQjQ7faYvs3xU8wyvpb6dt+U+HwdlbG7w=="
-      },
       "Microsoft.Data.Sqlite": {
         "type": "Transitive",
         "resolved": "10.0.0",
@@ -64,7 +58,7 @@
       "aegis.application": {
         "type": "Project",
         "dependencies": {
-          "Aegis.Domain": "[1.0.0, )"
+          "Aegis.Domain": "[0.2.0-beta.2, )"
         }
       },
       "aegis.domain": {
@@ -73,19 +67,13 @@
       "aegis.infrastructure": {
         "type": "Project",
         "dependencies": {
-          "Aegis.Application": "[1.0.0, )",
+          "Aegis.Application": "[0.2.0-beta.2, )",
           "Microsoft.Data.Sqlite": "[10.0.0, )",
           "SQLitePCLRaw.bundle_e_sqlite3": "[3.0.5, )"
         }
       }
     },
     "net10.0-windows7.0/win-x64": {
-      "System.Speech": {
-        "type": "Direct",
-        "requested": "[10.0.0, )",
-        "resolved": "10.0.0",
-        "contentHash": "nHlCdjoeReiSx4kzgPEwPRlbOAyuVFwndXTZZT+CLnHb8UIfB+YMgpQjQ7faYvs3xU8wyvpb6dt+U+HwdlbG7w=="
-      },
       "SQLite": {
         "type": "Transitive",
         "resolved": "3.53.4",

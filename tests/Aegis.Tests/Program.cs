@@ -4,7 +4,7 @@ using Aegis.Infrastructure;
 using System.Text.Json;
 using System.Diagnostics;
 using System.IO.Pipes;
-using System.Speech.Synthesis;
+
 
 int passed=0;
 void Check(bool ok,string name){if(!ok)throw new Exception("FAIL: "+name);passed++;Console.WriteLine("PASS: "+name);}
@@ -32,15 +32,6 @@ var unsafeSession=Session(new Snapshot(1,DateTimeOffset.UtcNow,0,[new("x","=SUM(
 var root=Path.GetFullPath(args.FirstOrDefault()??"work/test-data");Directory.CreateDirectory(root);var store=new SessionStore(root);var original=Session(Sample(1,10),Sample(2,null));await store.SaveAsync(original);var loaded=await store.LoadAsync(original.Id);Check(loaded is not null&&loaded.Name==original.Name&&loaded.Samples.Count==2&&loaded.Samples[1].Metrics[0].Value is null,"SQLite round trip preserves unicode and missing measurements");await store.SaveAsync(original);Check((await store.ListAsync()).Count(s=>s.Id==original.Id)==1,"SQLite save is idempotent");
 string frameFile=Path.Combine(root,"frames-fixture.csv");await File.WriteAllTextAsync(frameFile,"Application,SwapChainAddress,MsBetweenPresents\n\"game,one.exe\",0x1,10\n\"game,one.exe\",0x1,20\nother.exe,0x2,1\nother.exe,0x1,NA\n");var frameCapture=await PresentMonCapture.ImportAsync(frameFile,"game");Check(frameCapture.SwapChain=="0x1"&&frameCapture.Stats is {Frames:2}&&Math.Abs(frameCapture.Stats.AverageFps-1000/15d)<.001,"PresentMon parses quoted CSV and isolates dominant swapchain");
 bool unsupported=false;try{await store.SaveAsync(original with{Schema=2});}catch(InvalidDataException){unsupported=true;}Check(unsupported,"Unsupported session schema rejected");
-using var assistant=new OllamaAssistant();var fallback=await assistant.AskAsync("Explique",original,null,CancellationToken.None);Check(!fallback.Generated&&fallback.Text.Contains("Mesures indisponibles"),"Assistant without model has real evidence fallback");
-// Vérification des composants et de la sécurité des téléchargements
-var components = ComponentCatalog.All();
-Check(components.Count == 4 && components.Any(c => c.Id == ComponentCatalog.OllamaEngineId) && components.Any(c => c.Id == ComponentCatalog.LanguageModelId), "Catalog exposes all 4 official components");
-var manifest = ComponentCatalog.LoadEngineManifest();
-Check(manifest.Files.Length == 42 && manifest.Files.All(f => !string.IsNullOrEmpty(f.Sha256)), "Embedded engine manifest verified");
-bool traversalBlocked = false;
-try { ComponentInstaller.SafeDestination(root, "../outside.txt"); } catch(ComponentException) { traversalBlocked = true; }
-Check(traversalBlocked, "Directory traversal path blocked in component installer");
 string corruptDir = Path.Combine(root, "corrupt-test-" + Guid.NewGuid().ToString("N"));
 Directory.CreateDirectory(corruptDir);
 await File.WriteAllTextAsync(Path.Combine(corruptDir, "sessions.db"), "NOT A SQLITE DATABASE GARBAGE DATA");
@@ -57,31 +48,6 @@ if(args.Length>1)
     using var process=Process.Start(info)!;using var timeout=new CancellationTokenSource(TimeSpan.FromSeconds(30));
     try{await pipe.WaitForConnectionAsync(timeout.Token);using var reader=new StreamReader(pipe);for(int i=0;i<3;i++){var text=await reader.ReadLineAsync(timeout.Token);var s=JsonSerializer.Deserialize<Snapshot>(text!);Check(s is not null&&s.Protocol==1&&s.Metrics.Count>0&&s.Metrics.All(m=>m.Value is null||double.IsFinite(m.Value.Value)),"Real collector snapshot "+i);if(i>0)Check(Metrics.Latest(s,"cpu.load") is >=0 and <=100,"Real CPU bounded "+i);}}
     finally{if(!process.HasExited){process.Kill(true);await process.WaitForExitAsync();}}
-}
-if(args.Contains("--ai"))
-{
-    assistant.Enabled=true;assistant.UseEmbeddedHost();assistant.Model="qwen3.5:2b";
-    var reply=await assistant.AskAsync("Pourquoi ma partie saccadait ?",Session(Sample(1,72,61)),null,new CancellationTokenSource(TimeSpan.FromSeconds(90)).Token);
-    Check(reply.Generated&&reply.Text.Contains("aucune capture")&&!reply.Text.Contains("performances du système sont limitées"),"Real local AI selects no-frames evidence without invented diagnosis");
-    await File.WriteAllTextAsync(Path.Combine(root,"assistant-proof.txt"),reply.Provider+"\n"+reply.Text);
-}
-int voiceIndex=Array.IndexOf(args,"--voice");
-if(voiceIndex>=0&&voiceIndex+2<args.Length)
-{
-    string wav=Path.Combine(root,"voice-fixture.wav");
-    using(var synth=new SpeechSynthesizer())
-    {
-        var fr=synth.GetInstalledVoices().FirstOrDefault(v=>v.Enabled&&v.VoiceInfo.Culture.TwoLetterISOLanguageName=="fr");
-        if(fr is not null)synth.SelectVoice(fr.VoiceInfo.Name);
-        synth.SetOutputToWaveFile(wav,new System.Speech.AudioFormat.SpeechAudioFormatInfo(16000,System.Speech.AudioFormat.AudioBitsPerSample.Sixteen,System.Speech.AudioFormat.AudioChannel.Mono));
-        synth.Speak("Aegis, résume ma session de jeu.");
-    }
-    Check(new FileInfo(wav).Length>1000,"Windows local speech creates audio without network");
-    var info=new ProcessStartInfo(args[voiceIndex+1]){UseShellExecute=false,CreateNoWindow=true,RedirectStandardOutput=true,RedirectStandardError=true};
-    foreach(var arg in new[]{"-m",args[voiceIndex+2],"-f",wav,"-l","fr","-nt"})info.ArgumentList.Add(arg);
-    using var p=Process.Start(info)!;var output=p.StandardOutput.ReadToEndAsync();var errors=p.StandardError.ReadToEndAsync();await p.WaitForExitAsync();string transcription=await output;_=await errors;
-    Check(p.ExitCode==0&&transcription.Contains("session",StringComparison.OrdinalIgnoreCase),"Whisper transcribes French speech locally");
-    await File.WriteAllTextAsync(Path.Combine(root,"voice-proof.txt"),transcription);File.Delete(wav);
 }
 var threshold=new ThresholdMonitor();
 Check(!threshold.Observe(96,95,1)&&!threshold.Observe(96,95,2)&&threshold.Observe(96,95,3),"Threshold requires three consecutive samples");
@@ -104,4 +70,5 @@ try
 finally{File.SetAttributes(readOnlyDb,FileAttributes.Normal);}
 using(var c=new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={readOnlyDb};Pooling=False"))
 {c.Open();using var cmd=c.CreateCommand();cmd.CommandText="SELECT count(*) FROM sessions WHERE id='original'";Check(Convert.ToInt64(cmd.ExecuteScalar())==1,"Readonly startup failure preserves original records");}
+await UpdateTests.RunAsync(Check,root);
 Console.WriteLine($"{passed} checks passed.");

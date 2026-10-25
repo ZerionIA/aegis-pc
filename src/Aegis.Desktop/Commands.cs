@@ -15,3 +15,5 @@ public sealed class AsyncCommand(Func<Task> execute,Action<Exception> onError,Fu
     public event EventHandler? CanExecuteChanged;
     public void Refresh()=>CanExecuteChanged?.Invoke(this,EventArgs.Empty);
 }
+
+public sealed class ParameterCommand(Action<object?> execute) : ICommand { public bool CanExecute(object? value)=>true;public void Execute(object? value)=>execute(value);public event EventHandler? CanExecuteChanged{add{}remove{}} }

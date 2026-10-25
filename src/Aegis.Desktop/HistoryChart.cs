@@ -12,7 +12,7 @@ public sealed class HistoryChart : FrameworkElement
     protected override void OnRender(DrawingContext dc)
     {
         double w=Math.Max(0,ActualWidth-16),h=Math.Max(0,ActualHeight-32);
-        for(int i=0;i<=4;i++)dc.DrawLine(new Pen(new SolidColorBrush(Color.FromRgb(32,49,69)),1),new(8,16+h*i/4),new(w+8,16+h*i/4));
+        for(int i=0;i<=4;i++)dc.DrawLine(new Pen((Brush)System.Windows.Application.Current.Resources["Line"],1),new(8,16+h*i/4),new(w+8,16+h*i/4));
         if(Points is null||Points.Count<2)return;
         double start=Points[0].Seconds,end=Points[^1].Seconds,range=Math.Max(120,end-start);
         Draw(p=>p.Cpu,Color.FromRgb(82,218,238));Draw(p=>p.Memory,Color.FromRgb(181,156,255));

@@ -6,11 +6,6 @@ public interface ISessionStore
     Task<IReadOnlyList<Session>> ListAsync(CancellationToken token = default);
     Task<Session?> LoadAsync(Guid id, CancellationToken token = default);
 }
-public sealed record AssistantReply(string Text, string Provider, bool Generated);
-public interface ISessionAssistant
-{
-    Task<AssistantReply> AskAsync(string question, Session? session, Snapshot? current, CancellationToken token);
-}
 public sealed class SessionRecorder
 {
     private readonly List<Snapshot> samples = [];

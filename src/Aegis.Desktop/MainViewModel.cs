@@ -17,20 +17,14 @@ public sealed record MetricRow(string Device,string Name,string Reading,string S
 public sealed record SessionRow(Guid Id,string Title,string Date);
 public sealed record ChartPoint(double Seconds,double? Cpu,double? Memory);
 public sealed record ProcessRow(int Id,string Name);
-public sealed class MainViewModel : INotifyPropertyChanged,IAsyncDisposable
+public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposable
 {
     private readonly Dispatcher dispatcher=System.Windows.Application.Current.Dispatcher;
     private readonly CollectorClient collector=new();
     private readonly SessionRecorder recorder=new();
     private readonly SessionStore store;
-    private readonly OllamaAssistant assistant=new();
-    private readonly VoiceService voice;
-    private readonly LocalAiHost localHost;
     private readonly PresentMonCapture frames=new();
     private readonly string data;
-    private readonly ComponentStore componentStore;
-    private readonly ComponentInstaller installer;
-    private readonly HttpClient downloader;
     private readonly SemaphoreSlim checkpointGate=new(1,1);
     private DateTimeOffset lastCheckpoint=DateTimeOffset.MinValue,statusHold=DateTimeOffset.MinValue;
     private int collectorRestarts,healthySamples;
@@ -47,75 +41,63 @@ public sealed class MainViewModel : INotifyPropertyChanged,IAsyncDisposable
     public Command WidgetCommand{get;}
     public static string VersionText=>(typeof(MainViewModel).Assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute),false).FirstOrDefault() as System.Reflection.AssemblyInformationalVersionAttribute)?.InformationalVersion.Split('+')[0]??"0.2.0";
     public string AppVersion => $"Aegis {VersionText} · Bêta";
-    public ObservableCollection<ComponentRow> Components {get;}=[];
     private readonly CancellationTokenSource lifetime=new();
-    private CancellationTokenSource? request;
     private readonly List<Snapshot> live=[];
     private Snapshot? latest;
     private Session? selected;
     public ObservableCollection<MetricRow> MetricRows {get;}=[];
     public ObservableCollection<SessionRow> Sessions {get;}=[];
-    public ObservableCollection<string> Models {get;}=[];
     public ObservableCollection<ProcessRow> Processes {get;}=[];
     public ObservableCollection<ChartPoint> Chart {get;}=[];
     public event PropertyChangedEventHandler? PropertyChanged;
     private void Changed([CallerMemberName]string? name=null)=>PropertyChanged?.Invoke(this,new(name));
-    private string page="Vue d’ensemble",status="Connexion au collecteur…",cpu="—",memory="—",gpu="—",temperature="—",question="Pourquoi ma dernière session a-t-elle ralenti ?",answer="Enregistrez une session, puis demandez une explication. Le bilan fonctionne aussi sans modèle IA.",provider="Analyse locale",sessionName="Ma session",conditions="",summary="Aucune session sélectionnée.",model=ComponentCatalog.LanguageModelTag,whisper="",whisperModel="",comparison="Sélectionnez deux sessions pour comparer les mesures.",selectedDevice="—";
-    private bool aiEnabled,speak,animations=true;
+    private string page="Vue d’ensemble",status="Connexion au collecteur…",cpu="—",memory="—",gpu="—",temperature="—",sessionName="Ma session",conditions="",summary="Aucune session sélectionnée.",comparison="Sélectionnez deux sessions pour comparer les mesures.",selectedDevice="—";
     private string presentMonPath="",frameStatus="Frames : aucune capture sélectionnée.";
     public string PresentMonPath{get=>presentMonPath;set{presentMonPath=value;Changed();}}
     public string FrameStatus{get=>frameStatus;private set{frameStatus=value;Changed();}}
     public ProcessRow? SelectedProcess{get;set;}
-    public string Page {get=>page;private set{page=value;Changed();Changed(nameof(IsOverview));Changed(nameof(IsSessions));Changed(nameof(IsAssistant));Changed(nameof(IsHardware));Changed(nameof(IsSettings));Changed(nameof(IsAvatarActive));}}
-    public bool IsOverview=>Page=="Vue d’ensemble";public bool IsSessions=>Page=="Sessions";public bool IsAssistant=>Page=="Assistant";public bool IsHardware=>Page=="Matériel";public bool IsSettings=>Page=="Réglages";
-    public bool IsAvatarActive=>IsAssistant&&Animations&&!recorder.Active;
+    public string Page {get=>page;private set{page=value;Changed();Changed(nameof(IsOverview));Changed(nameof(IsSessions));Changed(nameof(IsHardware));Changed(nameof(IsSettings));Changed(nameof(IsDiscover));}}
+    public bool IsOverview=>Page=="Vue d’ensemble";public bool IsSessions=>Page=="Sessions";public bool IsHardware=>Page=="Matériel";public bool IsSettings=>Page=="Réglages";
     public string Status {get=>status;private set{status=value;statusHold=DateTimeOffset.UtcNow.AddSeconds(6);Changed();}}
     /// <summary>Message d'ambiance : n'écrase jamais un message d'action récent.</summary>
     private void PassiveStatus(string text){if(DateTimeOffset.UtcNow<statusHold||status==text)return;status=text;Changed(nameof(Status));}
     public string Cpu {get=>cpu;private set{cpu=value;Changed();}}public string Memory{get=>memory;private set{memory=value;Changed();}}public string Gpu{get=>gpu;private set{gpu=value;Changed();}}public string Temperature{get=>temperature;private set{temperature=value;Changed();}}
     public string SelectedDevice{get=>selectedDevice;private set{selectedDevice=value;Changed();}}
-    public string Question{get=>question;set{question=value;Changed();}}public string Answer{get=>answer;private set{answer=value;Changed();}}public string Provider{get=>provider;private set{provider=value;Changed();}}
+
     public string SessionName{get=>sessionName;set{sessionName=value;Changed();}}public string Conditions{get=>conditions;set{conditions=value;Changed();}}
     public string Summary{get=>summary;private set{summary=value;Changed();}}public string Comparison{get=>comparison;private set{comparison=value;Changed();}}
-    public string Model{get=>model;set{model=value;Changed();}}public string WhisperPath{get=>whisper;set{whisper=value;Changed();}}public string WhisperModel{get=>whisperModel;set{whisperModel=value;Changed();}}
-    public bool AiEnabled{get=>aiEnabled;set{aiEnabled=value;Changed();if(!value)localHost.Stop();}}public bool SpeakAnswers{get=>speak;set{speak=value;Changed();}}public bool Animations{get=>animations;set{animations=value;Changed();Changed(nameof(IsAvatarActive));}}
-    public SessionRow? SelectedSession{get;set;}public SessionRow? CompareSession{get;set;}
+
+
+    private SessionRow? selectedSession;public SessionRow? SelectedSession{get=>selectedSession;set{selectedSession=value;Changed();}}public SessionRow? CompareSession{get;set;}
     public string RecordLabel=>recorder.Active?"Arrêter et conserver":"Démarrer une session";
     public string RecordingStatus=>recorder.Active?$"Enregistrement · {recorder.Count} échantillons":"Prêt · collecte à 1 Hz";
-    public string VoiceLabel=>voice.Recording?"Terminer et transcrire":"Parler à Aegis";
-    public Command OverviewCommand{get;}public Command SessionsCommand{get;}public Command AssistantCommand{get;}public Command HardwareCommand{get;}public Command SettingsCommand{get;}public Command MarkerCommand{get;}public Command CancelCommand{get;}public Command SaveSettingsCommand{get;}
-    public AsyncCommand RecordCommand{get;}public AsyncCommand LoadCommand{get;}public AsyncCommand ExportCsvCommand{get;}public AsyncCommand ExportHtmlCommand{get;}public AsyncCommand AskCommand{get;}public AsyncCommand RefreshModelsCommand{get;}public AsyncCommand VoiceCommand{get;}public AsyncCommand CompareCommand{get;}
+
+    public Command OverviewCommand{get;}public Command SessionsCommand{get;}public Command HardwareCommand{get;}public Command SettingsCommand{get;}public Command MarkerCommand{get;}public Command SaveSettingsCommand{get;}
+    public AsyncCommand RecordCommand{get;}public AsyncCommand LoadCommand{get;}public AsyncCommand ExportCsvCommand{get;}public AsyncCommand ExportHtmlCommand{get;}public AsyncCommand CompareCommand{get;}
     public Command RefreshProcessesCommand{get;}
-    public AsyncCommand StartLocalAiCommand{get;}
     public MainViewModel()
     {
         var arguments=Environment.GetCommandLineArgs();var dataIndex=Array.IndexOf(arguments,"--data-dir");
         data=dataIndex>=0&&dataIndex+1<arguments.Length?Path.GetFullPath(arguments[dataIndex+1]):Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"AegisNext");
         Directory.CreateDirectory(data);
-        store=new(data);voice=new(data);localHost=new(data);
+        store=new(data);
         WidgetCommand=new(()=>{if(widget is null){widget=new(this);widget.Closed+=(_,_)=>widget=null;widget.Show();}else widget.Activate();});
-        componentStore=new(Path.Combine(data,"components"));
-        downloader=new HttpClient{Timeout=TimeSpan.FromSeconds(60)};downloader.DefaultRequestHeaders.UserAgent.ParseAdd("Aegis/"+VersionText);
-        installer=new(downloader,componentStore);
-        OverviewCommand=new(()=>Page="Vue d’ensemble");SessionsCommand=new(()=>Page="Sessions");AssistantCommand=new(()=>Page="Assistant");HardwareCommand=new(()=>Page="Matériel");SettingsCommand=new(()=>Page="Réglages");
+        OverviewCommand=new(()=>Page="Vue d’ensemble");SessionsCommand=new(()=>Page="Sessions");HardwareCommand=new(()=>Page="Matériel");SettingsCommand=new(()=>Page="Réglages");
         MarkerCommand=new(()=>{recorder.Mark("Saccade ressentie");Status="Marqueur ajouté à la session.";},()=>recorder.Active);
-        CancelCommand=new(()=>{request?.Cancel();voice.CancelRecording();voice.StopSpeaking();Changed(nameof(VoiceLabel));Status="Demande annulée / microphone et voix arrêtés.";});
         SaveSettingsCommand=new(()=>SaveSettings());
         RefreshProcessesCommand=new(RefreshProcesses);
         RecordCommand=new(ToggleRecord,Error);LoadCommand=new(LoadSession,Error);ExportCsvCommand=new(()=>Export(false),Error);ExportHtmlCommand=new(()=>Export(true),Error);
-        StartLocalAiCommand=new(StartLocalAi,Error);
-        AskCommand=new(Ask,Error);RefreshModelsCommand=new(RefreshModels,Error);VoiceCommand=new(ToggleVoice,Error);CompareCommand=new(Compare,Error);
+        CompareCommand=new(Compare,Error);
         LoadSettings();
         if(string.IsNullOrEmpty(PresentMonPath)&&File.Exists(Path.Combine(AppContext.BaseDirectory,"tools","PresentMon.exe")))PresentMonPath=Path.Combine(AppContext.BaseDirectory,"tools","PresentMon.exe");
         
         
-        ResolveToolPaths();
-        foreach(var definition in ComponentCatalog.All()){var row=new ComponentRow(definition,InstallComponentAsync,Error);row.SetInstalled(IsComponentInstalled(definition));Components.Add(row);}
         if(store.QuarantinedDatabase is not null)Status="La base de sessions était illisible : elle a été conservée à part ("+Path.GetFileName(store.QuarantinedDatabase)+") et une base neuve a été créée.";
+        InitializeProduct();
         RefreshProcesses();
         collector.Sample+=s=>dispatcher.BeginInvoke(()=>Accept(s));collector.Fault+=e=>dispatcher.BeginInvoke(()=>_=OnCollectorFaultAsync(e));
     }
-    public async Task InitializeAsync(){await RefreshSessions();await collector.StartAsync();}
+    public async Task InitializeAsync(){await RefreshSessions();await collector.StartAsync();_ = CheckAutomaticUpdatesAsync();}
     private static string Format(double? v,string unit)=>v.HasValue?v.Value.ToString("F1",CultureInfo.CurrentCulture)+" "+unit:"Indisponible";
     private void Accept(Snapshot s)
     {
@@ -147,7 +129,7 @@ public sealed class MainViewModel : INotifyPropertyChanged,IAsyncDisposable
         try
         {
             if(recorder.Active)await FinishRecordingAsync("Collecteur interrompu ("+reason+") : session conservée jusqu’à l’interruption.");
-            Changed(nameof(RecordLabel));Changed(nameof(RecordingStatus));Changed(nameof(IsAvatarActive));MarkerCommand.Refresh();
+            Changed(nameof(RecordLabel));Changed(nameof(RecordingStatus));MarkerCommand.Refresh();
             if(collectorRestarts>=3){Status="Collecteur indisponible : "+reason+" — redémarrez Aegis.";return;}
             collectorRestarts++;Status=$"Collecteur interrompu ({reason}) · nouvelle tentative {collectorRestarts}/3…";
             await Task.Delay(TimeSpan.FromSeconds(2*collectorRestarts),lifetime.Token);
@@ -161,7 +143,7 @@ public sealed class MainViewModel : INotifyPropertyChanged,IAsyncDisposable
     {
         if(limitHandled)return;limitHandled=true;
         await FinishRecordingAsync("Limite de 8 h atteinte : session conservée.");
-        Changed(nameof(RecordLabel));Changed(nameof(RecordingStatus));Changed(nameof(IsAvatarActive));MarkerCommand.Refresh();
+        Changed(nameof(RecordLabel));Changed(nameof(RecordingStatus));MarkerCommand.Refresh();
     }
     /// <summary>Sauvegarde périodique : saute le cycle si la précédente n'est pas finie, ne bloque jamais l'interface.</summary>
     private async Task CheckpointAsync(Session s)
@@ -202,7 +184,7 @@ public sealed class MainViewModel : INotifyPropertyChanged,IAsyncDisposable
         Status=e switch
         {
             OperationCanceledException=>"Opération annulée.",
-            System.Net.Http.HttpRequestException=>"Connexion impossible (moteur local ou réseau). Vérifiez Réglages → Composants facultatifs.",
+            System.Net.Http.HttpRequestException=>"Connexion GitHub indisponible. Réessayez plus tard.",
             Microsoft.Data.Sqlite.SqliteException=>"Base de sessions inaccessible : "+e.Message,
             UnauthorizedAccessException=>"Accès refusé : "+e.Message,
             _=>e.Message
@@ -211,15 +193,13 @@ public sealed class MainViewModel : INotifyPropertyChanged,IAsyncDisposable
     }
     private async Task ToggleRecord()
     {
-        if(voice.Recording)throw new InvalidOperationException("Terminez la transcription avant de capturer.");
-        request?.Cancel();voice.StopSpeaking();
         if(recorder.Active)await FinishRecordingAsync();
         else
         {
             if(latest is null)throw new InvalidOperationException("Le collecteur ne fournit pas encore de mesures : patientez quelques secondes puis réessayez.");
-            if(Components.Any(c=>c.IsBusy))throw new InvalidOperationException("Un téléchargement de composant est en cours : terminez-le ou annulez-le avant de lancer une session.");
-            limitHandled=false;selected=null;localHost.Stop();
-            if(SelectedProcess is not null)
+            updateRequest?.Cancel();
+            limitHandled=false;selected=null;
+            if(SelectedProcess is {Id:>0})
             {
                 try
                 {
@@ -231,16 +211,16 @@ public sealed class MainViewModel : INotifyPropertyChanged,IAsyncDisposable
             }
             else FrameStatus="Capteurs uniquement · aucun processus sélectionné pour les frames.";
             recorder.Start(SessionName,Conditions);lastCheckpoint=DateTimeOffset.UtcNow.AddSeconds(-50);
-            Status="Session démarrée · le moteur IA est suspendu pour préserver les mesures.";
+            Status="Session démarrée · les mesures restent sur ce PC.";
         }
-        Changed(nameof(RecordLabel));Changed(nameof(RecordingStatus));Changed(nameof(IsAvatarActive));MarkerCommand.Refresh();
-    }    private async Task RefreshSessions(){Sessions.Clear();foreach(var s in await store.ListAsync())Sessions.Add(new(s.Id,s.Name,s.Started.ToLocalTime().ToString("g")));}
+        Changed(nameof(RecordLabel));Changed(nameof(RecordingStatus));MarkerCommand.Refresh();
+    }    private async Task RefreshSessions(){var id=selected?.Id??SelectedSession?.Id;Sessions.Clear();foreach(var s in await store.ListAsync())Sessions.Add(new(s.Id,s.Name,s.Started.ToLocalTime().ToString("g")));SelectedSession=Sessions.FirstOrDefault(s=>s.Id==id);}
     private async Task LoadSession(){if(SelectedSession is null)return;selected=await store.LoadAsync(SelectedSession.Id);if(selected is not null)ShowSummary(selected);}
     private static string DescribeFrames(FrameCapture f)=>f.Stats is {} x?$"{f.Process} · {x.Frames} présentations · FPS moyens {x.AverageFps:F1} · 1% low {x.OnePercentLowFps:F1} · p99 {x.P99Milliseconds:F2} ms\n{f.Status}":f.Status;
     private void ShowSummary(Session s){var a=SessionAnalysis.Summarize(s);Summary=$"{s.Name} · {a.DurationSeconds:F0} s · {a.SampleCount} échantillons\n\n"+(s.Frames is {} f?DescribeFrames(f)+"\n\n":"")+string.Join("\n\n",a.Findings.Select(f=>$"{f.Title}\n{f.Detail}\nÀ vérifier : {f.NextCheck}"));}
     private void RefreshProcesses()
     {
-        Processes.Clear();
+        Processes.Clear();Processes.Add(new(0,"Capteurs uniquement"));
         foreach(var p in Process.GetProcesses().OrderBy(p=>p.ProcessName)){using(p){try{if(p.MainWindowHandle!=IntPtr.Zero)Processes.Add(new(p.Id,p.ProcessName));}catch(Exception e)when(e is InvalidOperationException or System.ComponentModel.Win32Exception){}}}
     }
     private Session Context()=>selected??(recorder.Active?recorder.Current():new(Guid.NewGuid(),"Vue en direct",DateTimeOffset.UtcNow,null,"",live.ToArray(),[]));
@@ -251,57 +231,6 @@ public sealed class MainViewModel : INotifyPropertyChanged,IAsyncDisposable
         if(d.ShowDialog()!=true)return;
         await File.WriteAllTextAsync(d.FileName,html?Reports.Html(s):Reports.Csv(s));Status="Export enregistré : "+d.FileName;
     }
-    private static string Baseline(Session s)=>string.Join("\n\n",SessionAnalysis.Summarize(s).Findings.Select(f=>f.Detail));
-    /// <summary>Prépare l'IA facultative : moteur Aegis installé, sinon Ollama déjà présent sur ce PC. Faux si aucun moteur n'est joignable.</summary>
-    private async Task<bool> PrepareAiAsync(CancellationToken token)
-    {
-        if(localHost.EngineAvailable)
-        {
-            localHost.Start();assistant.UseEmbeddedHost();
-            for(int i=0;i<30;i++){if(await assistant.IsReachableAsync(token))return true;await Task.Delay(500,token);}
-            return false;
-        }
-        assistant.UseExternalHost();
-        return await assistant.IsReachableAsync(token);
-    }
-    private async Task Ask()
-    {
-        if(recorder.Active)throw new InvalidOperationException("Arrêtez la session avant de lancer l’assistant pour préserver les mesures.");
-        if(string.IsNullOrWhiteSpace(Question))return;
-        request?.Dispose();request=CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);request.CancelAfter(TimeSpan.FromSeconds(95));
-        var s=Context();Status="Aegis analyse les preuves…";
-        try
-        {
-            bool ready=AiEnabled&&await PrepareAiAsync(request.Token);
-            assistant.Enabled=ready;assistant.Model=Model;
-            var r=await assistant.AskAsync(Question,s,latest,request.Token);
-            Answer=r.Text;
-            Provider=AiEnabled&&!ready?"Analyse locale · moteur IA non disponible (Réglages → Composants facultatifs)":r.Provider;
-            if(SpeakAnswers)voice.Speak(Answer);
-            Status=r.Generated||!AiEnabled?"Bilan disponible.":"Bilan disponible (repli sans modèle) : "+r.Provider;
-        }
-        catch(OperationCanceledException)
-        {
-            Answer="La demande a été annulée ou a dépassé le délai.\n\n"+Baseline(s);Provider="Repli · analyse déterministe";
-            Status="Demande annulée ou délai atteint : le bilan de base reste accessible.";
-        }
-    }    private async Task RefreshModels(){Models.Clear();foreach(var m in await assistant.ModelsAsync(lifetime.Token))Models.Add(m);if(Models.Count>0&&!Models.Contains(Model))Model=Models[0];Status=$"{Models.Count} modèle(s) local(aux) détecté(s).";}
-    private async Task StartLocalAi()
-    {
-        if(recorder.Active)throw new InvalidOperationException("Arrêtez la capture avant de tester le moteur IA.");
-        if(!await PrepareAiAsync(lifetime.Token))
-            throw new IOException(localHost.EngineAvailable?"Le moteur IA local n’a pas démarré.":"Aucun moteur IA : installez-le dans Composants facultatifs, ou lancez Ollama sur ce PC. Aegis fonctionne sans.");
-        await RefreshModels();AiEnabled=true;
-        Status=localHost.HasModel(Model)||Models.Contains(Model)?"Moteur IA prêt · le modèle n’est chargé que lors d’une demande.":$"Moteur IA prêt, mais le modèle « {Model} » n’est pas installé : voir Composants facultatifs.";
-    }    internal async Task SmokeAssistantAsync(){await StartLocalAi();Question="Résume les mesures CPU et RAM disponibles.";await Ask();}
-    private async Task ToggleVoice()
-    {
-        if(recorder.Active)throw new InvalidOperationException("La voix est suspendue pendant la capture.");
-        if(!voice.Recording){if(!File.Exists(WhisperPath)||!File.Exists(WhisperModel))throw new FileNotFoundException("La commande vocale n'est pas installee. Ouvrez Reglages -> Composants facultatifs pour installer la transcription et son modele.");voice.Start();Status="Microphone actif · cliquez à nouveau pour terminer.";Changed(nameof(VoiceLabel));return;}
-        using var timeout=CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);timeout.CancelAfter(TimeSpan.FromSeconds(60));
-        try{Question=await voice.StopAndTranscribeAsync(WhisperPath,WhisperModel,timeout.Token);Status="Transcription prête : vérifiez puis cliquez sur Analyser.";}
-        finally{Changed(nameof(VoiceLabel));}
-    }
     private async Task Compare()
     {
         if(SelectedSession is null||CompareSession is null)throw new InvalidOperationException("Choisissez deux sessions.");
@@ -310,59 +239,23 @@ public sealed class MainViewModel : INotifyPropertyChanged,IAsyncDisposable
         string Delta(double? first,double? second)=>first.HasValue&&second.HasValue?$"{first:F1} → {second:F1} ({second-first:+0.0;-0.0;0.0} points)":"Mesure absente";
         Comparison=$"{a.Name} → {b.Name}\nCPU moyen : {Delta(x.CpuAverage,y.CpuAverage)}\nRAM maximale : {Delta(x.MemoryPeak,y.MemoryPeak)}\n\nComparaison descriptive : scène, durée et réglages ne sont pas validés comme identiques. Aucune conclusion causale.\nConditions A : {a.Conditions}\nConditions B : {b.Conditions}";
     }
-    private sealed record Settings(bool Ai,string Model,bool Speak,bool Animate,string Whisper,string WhisperModel,string PresentMon="",bool Alerts=false,double CpuLimit=95,double RamLimit=90,double TempLimit=85);
-    private void LoadSettings(){try{string p=Path.Combine(data,"settings.json");if(!File.Exists(p))return;var s=JsonSerializer.Deserialize<Settings>(File.ReadAllText(p));if(s is null)return;AiEnabled=s.Ai;Model=string.IsNullOrWhiteSpace(s.Model)?ComponentCatalog.LanguageModelTag:s.Model;SpeakAnswers=s.Speak;Animations=s.Animate;WhisperPath=s.Whisper;WhisperModel=s.WhisperModel;PresentMonPath=s.PresentMon;AlertsEnabled=s.Alerts;CpuThreshold=s.CpuLimit;RamThreshold=s.RamLimit;TempThreshold=s.TempLimit;}catch(Exception e)when(e is IOException or JsonException or UnauthorizedAccessException){Status="Réglages ignorés : "+e.Message;}}
+    private sealed record Settings(string PresentMon="",bool Alerts=false,double CpuLimit=95,double RamLimit=90,double TempLimit=85,string Theme="Forest",bool AutoUpdates=true,DateTimeOffset LastUpdateCheck=default);
+    private void LoadSettings()
+    {
+        try{var path=Path.Combine(data,"settings.json");if(!File.Exists(path))return;var settings=JsonSerializer.Deserialize<Settings>(File.ReadAllText(path));if(settings is null)return;PresentMonPath=settings.PresentMon;AlertsEnabled=settings.Alerts;CpuThreshold=settings.CpuLimit;RamThreshold=settings.RamLimit;TempThreshold=settings.TempLimit;Theme=settings.Theme;AutoUpdates=settings.AutoUpdates;lastUpdateCheck=settings.LastUpdateCheck;}
+        catch(Exception e)when(e is IOException or JsonException or UnauthorizedAccessException){Status="Réglages ignorés : "+e.Message;}
+    }
     private bool SaveSettings(bool announce=true)
     {
-        try
-        {
-            string path=Path.Combine(data,"settings.json"),temp=path+".tmp";
-            File.WriteAllText(temp,JsonSerializer.Serialize(new Settings(AiEnabled,Model,SpeakAnswers,Animations,WhisperPath,WhisperModel,PresentMonPath,AlertsEnabled,CpuThreshold,RamThreshold,TempThreshold)));
-            File.Move(temp,path,true);
-            if(announce)Status="Réglages enregistrés.";return true;
-        }
-        catch(Exception e) when(e is IOException or UnauthorizedAccessException){Error(e);return false;}
+        try{var path=Path.Combine(data,"settings.json");File.WriteAllText(path+".tmp",JsonSerializer.Serialize(new Settings(PresentMonPath,AlertsEnabled,CpuThreshold,RamThreshold,TempThreshold,Theme,AutoUpdates,lastUpdateCheck)));File.Move(path+".tmp",path,true);if(announce)Status="Réglages enregistrés.";return true;}
+        catch(Exception e)when(e is IOException or UnauthorizedAccessException){Error(e);return false;}
     }
-    /// <summary>Choisit les outils déjà présents : réglage manuel valide, sinon composant installé, sinon outil livré avec l'application.</summary>
-    private void ResolveToolPaths()
-    {
-        string tools=Path.Combine(AppContext.BaseDirectory,"tools");
-        if(!File.Exists(PresentMonPath)&&File.Exists(Path.Combine(tools,"PresentMon.exe")))PresentMonPath=Path.Combine(tools,"PresentMon.exe");
-        if(!File.Exists(WhisperPath))WhisperPath=componentStore.FindFile(ComponentCatalog.WhisperCliId,"whisper-cli.exe")??(File.Exists(Path.Combine(tools,"whisper","whisper-cli.exe"))?Path.Combine(tools,"whisper","whisper-cli.exe"):WhisperPath);
-        if(!File.Exists(WhisperModel))WhisperModel=componentStore.FindFile(ComponentCatalog.WhisperModelId,"ggml-base.bin")??(File.Exists(Path.Combine(tools,"whisper","ggml-base.bin"))?Path.Combine(tools,"whisper","ggml-base.bin"):WhisperModel);
-    }
-    private bool IsComponentInstalled(ComponentDefinition d)=>d.Kind switch
-    {
-        ComponentKind.OllamaModel=>localHost.HasModel(d.Source),
-        _=>d.Id==ComponentCatalog.OllamaEngineId?localHost.EngineAvailable:componentStore.IsInstalled(d)
-    };
-    private async Task InstallComponentAsync(ComponentRow row)
-    {
-        if(recorder.Active)throw new InvalidOperationException("Terminez la session avant d’installer un composant : un téléchargement fausserait vos mesures réseau et disque.");
-        var d=row.Definition;
-        if(d.DependsOn is not null&&Components.FirstOrDefault(c=>c.Definition.Id==d.DependsOn) is {IsInstalled:false} missing)
-            throw new InvalidOperationException("Installez d’abord « "+missing.Title+" ».");
-        await row.RunAsync(lifetime.Token,async(progress,token)=>
-        {
-            if(d.Kind==ComponentKind.OllamaModel)
-            {
-                if(!await PrepareAiAsync(token))throw new ComponentException("Le moteur IA local n’a pas démarré. Réessayez, ou relancez Aegis.");
-                await assistant.PullModelAsync(d.Source,progress,token);
-                if(!localHost.HasModel(d.Source))throw new ComponentException("Le modèle n’apparaît pas dans le dossier des modèles après le téléchargement. Relancez l’installation.");
-                Model=d.Source;
-            }
-            else await installer.InstallAsync(d,progress,token);
-        });
-        if(row.IsInstalled){ResolveToolPaths();SaveSettings(false);Status=d.Title+" : installé.";}
-        else if(row.HasError)Status=d.Title+" : "+row.Error;
-        else Status=d.Title+" : installation annulée.";
-    }    private static async Task Safe(Func<Task> step){try{await step();}catch(Exception e){App.Log("Fermeture : "+e);}}
+    private static async Task Safe(Func<Task> step){try{await step();}catch(Exception e){App.Log("Fermeture : "+e);}}
     /// <summary>Fermeture : chaque étape est isolée pour que la session soit enregistrée et les processus enfants arrêtés quoi qu'il arrive.</summary>
     public async ValueTask DisposeAsync()
     {
-        shuttingDown=true;
+        shuttingDown=true;updateTimer.Stop();updateRequest?.Cancel();
         widget?.Close();
-        try{request?.Cancel();}catch(ObjectDisposedException){}
         await Safe(async()=>await lifetime.CancelAsync());
         await Safe(async()=>
         {
@@ -378,8 +271,7 @@ public sealed class MainViewModel : INotifyPropertyChanged,IAsyncDisposable
         });
         await Safe(async()=>await frames.DisposeAsync().AsTask());
         await Safe(async()=>await collector.DisposeAsync().AsTask());
-        await Safe(()=>{voice.Dispose();assistant.Dispose();localHost.Dispose();downloader.Dispose();return Task.CompletedTask;});
         await checkpointGate.WaitAsync();checkpointGate.Release();
-        request?.Dispose();lifetime.Dispose();
+        lifetime.Dispose();
     }
 }
