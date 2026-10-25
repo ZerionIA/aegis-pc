@@ -2,9 +2,25 @@
 
 **Votre PC, en clair.** Monitoring Windows gratuit et open source. Sans compte, publicité, paiement ni télémétrie applicative.
 
-**0.3.0-beta.1 · Windows 10/11 x64 · Bêta publique non signée.**
+**0.4.0-beta.1 · Windows 10/11 x64 · Bêta publique non signée.**
 
 [Télécharger](https://github.com/ZerionIA/aegis-pc/releases) · [Aide et problèmes](https://github.com/ZerionIA/aegis-pc/issues) · [Confidentialité](PRIVACY.md)
+
+## En trois gestes
+
+1. Démarrez une session avant votre jeu ou votre travail.
+2. Marquez un moment avec **Ctrl+Alt+F8**, depuis la fenêtre ou le menu de l'icône près de l'horloge.
+3. Arrêtez la capture et retrouvez le dernier bilan. Les marqueurs donnent le contexte ; les mesures ne prouvent pas à elles seules une cause.
+
+## Au quotidien
+
+Icône près de l'horloge avec commandes de session, panneau compact et ouverture de l'app. La réduction peut masquer la fenêtre dans cette zone ; la croix quitte réellement l'application après sauvegarde. Une seconde ouverture ramène la fenêtre existante.
+
+Le démarrage discret avec Windows est facultatif : cocher l'option puis Enregistrer. Il utilise uniquement la clé Run du compte utilisateur, sans élévation. Il n'est pas activé à l'installation. Le raccourci est libéré à la fermeture ; un conflit de touche est signalé. Il ne s'agit pas d'une injection dans les jeux.
+
+La bibliothèque propose recherche par nom/date, accès au dernier bilan et signalement des sauvegardes intermédiaires interrompues. Les deux sélections de comparaison sont indépendantes. Jusqu'à 200 sessions récentes sont listées.
+
+Le rapport support est créé localement après choix d'un fichier ; il contient version, OS, architecture et compteurs de disponibilité. Il exclut les noms de sessions, chemins, identifiants et valeurs des capteurs. Relisez-le avant de l'envoyer à contact@zerionia.com. Aucun envoi automatique.
 
 ## Fonctions
 
@@ -18,7 +34,7 @@
 
 ## Installation
 
-Télécharger Aegis-0.3.0-beta.1-Setup.exe depuis une GitHub Release. Le runtime .NET est inclus. Installation par utilisateur sans élévation automatique. Fermer Aegis avant mise à jour ou désinstallation. Les données restent dans %LOCALAPPDATA%/AegisNext après désinstallation.
+Télécharger Aegis-0.4.0-beta.1-Setup.exe depuis une GitHub Release. Le runtime .NET est inclus. Installation par utilisateur sans élévation automatique. Fermer Aegis avant mise à jour ou désinstallation. Les données restent dans %LOCALAPPDATA%/AegisNext après désinstallation.
 
 Bêta non signée : Windows peut afficher un avertissement. Vérifier la provenance et SHA256SUMS.txt. Aegis ne demande pas de désactiver une protection Windows. Le panneau de bureau peut être masqué par le plein écran exclusif ; ce n'est pas un overlay injecté.
 
@@ -26,7 +42,7 @@ Bêta non signée : Windows peut afficher un avertissement. Vérifier la provena
 
 Les nouvelles releases du dépôt officiel sont vérifiées au plus une fois par jour quand l'application est ouverte. Le téléchargement se fait automatiquement hors session ; l'installation demande un clic sur « Installer et redémarrer ». Un téléchargement est suspendu au démarrage d'une capture. Ces options sont désactivables dans Réglages.
 
-L'intégrité est vérifiée avec le SHA-256 fourni par GitHub et une source HTTPS fixe. Ce mécanisme n'est pas une signature Authenticode ; la bêta reste non signée. La version 0.2 doit être remplacée une première fois par l'installateur 0.3 pour bénéficier de cette fonction. Les anciennes sessions restent compatibles. Un commit seul ne publie pas de mise à jour : voir [le guide de release](docs/RELEASE.md).
+L'intégrité est vérifiée avec le SHA-256 fourni par GitHub et une source HTTPS fixe. Ce mécanisme n'est pas une signature Authenticode ; la bêta reste non signée. La version 0.2 doit être remplacée une première fois par l’installateur courant pour bénéficier de cette fonction. Les anciennes sessions restent compatibles. Un commit seul ne publie pas de mise à jour : voir [le guide de release](docs/RELEASE.md).
 
 Thèmes Forêt, Minuit et Clair. Une page Zerionia donne accès au studio, à [@ZerioniaHQ](https://x.com/ZerioniaHQ), au GitHub et au contact public contact@zerionia.com. Aucun lien ni encart promotionnel ne s'ouvre automatiquement.
 

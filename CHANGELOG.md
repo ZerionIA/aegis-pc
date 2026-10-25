@@ -1,5 +1,15 @@
 # Historique
 
+## 0.4.0-beta.1 — 25 octobre 2026
+
+- Icône de marque près de l’horloge et menu des commandes de session.
+- Raccourci global Ctrl+Alt+F8 avec gestion des conflits, sans injection.
+- Démarrage discret avec Windows facultatif ; deuxième ouverture réactivant l’instance existante.
+- Recherche de sessions, dernier bilan accessible directement et sauvegardes interrompues identifiées.
+- Rapport support local minimal et confirmation avant perte de mesures non enregistrées.
+- Correction des listes déroulantes et de l’application des thèmes au panneau compact.
+
+
 ## 0.3.0-beta.1 — 25 octobre 2026
 
 - Suppression de l'assistant IA, de la transcription, de la synthèse vocale et de leurs dépendances.

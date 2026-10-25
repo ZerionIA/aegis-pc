@@ -53,11 +53,11 @@ public sealed class SessionStore : ISessionStore
     }
     public async Task<IReadOnlyList<Session>> ListAsync(CancellationToken token = default)
     {
-        await using var c = Open(); await using var command = c.CreateCommand(); command.CommandText = "SELECT id,name,started FROM sessions ORDER BY started DESC LIMIT 200";
+        await using var c = Open(); await using var command = c.CreateCommand(); command.CommandText = "SELECT id,name,started,json_extract(data,'$.Ended') FROM sessions ORDER BY started DESC LIMIT 200";
         await using var r = await command.ExecuteReaderAsync(token); var list = new List<Session>();
         while (await r.ReadAsync(token))
             if (Guid.TryParse(r.GetString(0), out var id) && DateTimeOffset.TryParse(r.GetString(2), out var started))
-                list.Add(new(id, r.GetString(1), started, null, "", [], []));
+                list.Add(new(id, r.GetString(1), started, !r.IsDBNull(3)&&DateTimeOffset.TryParse(r.GetString(3),out var ended)?ended:null, "", [], []));
         return list;
     }
     public async Task<Session?> LoadAsync(Guid id, CancellationToken token = default)

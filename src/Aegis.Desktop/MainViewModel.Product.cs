@@ -14,7 +14,7 @@ public sealed partial class MainViewModel
     private CancellationTokenSource? updateRequest;
     private readonly DispatcherTimer updateTimer=new(){Interval=TimeSpan.FromMinutes(15)};
     private string theme="Forest",updateStatus="Vérification automatique des releases GitHub activée.";
-    private bool autoUpdates=true,updateBusy,updateReady;
+    private bool autoUpdates=true,updateBusy,updateReady,installationStarted;
     private double updateProgress;
     private DateTimeOffset lastUpdateCheck;
     public ThemeChoice[] Themes{get;}=[new("Forest","Forêt"),new("Midnight","Minuit"),new("Light","Clair")];
@@ -42,7 +42,7 @@ public sealed partial class MainViewModel
         DiscoverCommand=new(()=>Page="Zerionia");
         OpenProjectCommand=new(value=>{if(value is ProjectLink link&&Projects.Contains(link))Process.Start(new ProcessStartInfo(link.Url){UseShellExecute=true});});
         CheckUpdatesCommand=new(()=>CheckUpdatesAsync(),Error,()=>!recorder.Active);
-        InstallUpdateCommand=new(InstallUpdateAsync,Error,()=>UpdateReady&&!recorder.Active);
+        InstallUpdateCommand=new(InstallUpdateAsync,Error,()=>UpdateReady&&!recorder.Active&&!installationStarted);
         var errorPath=Path.Combine(data,"update-error.txt");
         if(File.Exists(errorPath)){try{UpdateStatus="Dernière installation : "+File.ReadAllText(errorPath);}catch(IOException){}}
         var cache=Path.Combine(data,"updates");
@@ -73,6 +73,7 @@ public sealed partial class MainViewModel
     }
     private async Task InstallUpdateAsync()
     {
+        if(installationStarted)return;
         if(recorder.Active||nextUpdate is null)throw new InvalidOperationException("Terminez la session avant la mise à jour.");
         string exe=Path.Combine(AppContext.BaseDirectory,"updater","Aegis.Updater.exe");
         if(!File.Exists(exe))throw new FileNotFoundException("Outil de mise à jour absent : réinstallez le paquet complet.");
@@ -87,6 +88,6 @@ public sealed partial class MainViewModel
         }
         info.FileName=Path.Combine(runner,"Aegis.Updater.exe");
         info.ArgumentList.Add(Path.Combine(AppContext.BaseDirectory,"Aegis.exe"));
-        Process.Start(info);UpdateInstallationRequested?.Invoke();
+        Process.Start(info);installationStarted=true;InstallUpdateCommand.Refresh();UpdateInstallationRequested?.Invoke();
     }
 }

@@ -1,4 +1,4 @@
-# Confidentialité — Aegis 0.3
+# Confidentialité — Aegis 0.4
 
 Les mesures, sessions, marqueurs et réglages sont stockés dans %LOCALAPPDATA%/AegisNext. Le journal local peut contenir des chemins de fichiers et reste sur votre PC. Aucun compte, publicité comportementale ou envoi de mesures à un serveur n'est intégré.
 
@@ -10,4 +10,6 @@ L'installation est confirmée dans l'app et attend sa fermeture. Les télécharg
 
 Les liens Zerionia/X/GitHub et mailto s'ouvrent uniquement après clic. Les services externes ont leurs propres politiques. Aucune publicité tierce n'est chargée dans l'app. Les exports et rapports de bugs sont partagés par vous : relire et anonymiser avant envoi.
 
-Contact public indiqué par le responsable du projet : contact@zerionia.com. La vérification des serveurs MX du domaine ne garantit pas que cette boîte existe ni qu'un message sera distribué.
+Contact public indiqué par le responsable du projet : contact@zerionia.com.
+
+Le raccourci global enregistre uniquement Ctrl+Alt+F8 auprès de Windows ; aucun flux de frappe ni contenu du clavier n’est enregistré. Le démarrage Windows est une option du compte utilisateur, appliquée après clic sur Enregistrer. Le rapport support est exporté localement sur demande et n’est jamais envoyé automatiquement.

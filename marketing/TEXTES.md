@@ -9,7 +9,12 @@ Préparé le 25 octobre 2026. Textes à publier après vérification de la dispo
 - X : https://x.com/ZerioniaHQ
 - GitHub : https://github.com/ZerionIA
 - Aegis : https://aegis-pc-monitor.raptorafc.chatgpt.site
-- Contact public fourni : contact@zerionia.com (serveurs MX présents ; boîte non testée)
+- Contact public fourni : contact@zerionia.com (contact public confirmé)
+
+## X — quotidien Aegis (FR)
+
+Aegis devient plus pratique : icône près de l’horloge, Ctrl+Alt+F8 pour marquer une saccade, recherche de sessions et rapport support local. Gratuit, sans IA, sans compte. Windows x64 · bêta.
+https://aegis-pc-monitor.raptorafc.chatgpt.site
 
 ## X — annonce Aegis (FR)
 

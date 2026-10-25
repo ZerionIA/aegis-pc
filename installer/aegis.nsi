@@ -5,12 +5,14 @@ Name "Aegis Bêta"
  !define PACKAGE_DIR "..\artifacts\release"
 !endif
 !ifndef APP_VERSION
- !define APP_VERSION "0.3.0-beta.1"
+ !define APP_VERSION "0.4.0-beta.1"
 !endif
 OutFile "..\artifacts\Aegis-${APP_VERSION}-Setup.exe"
 InstallDir "$LOCALAPPDATA\Programs\Aegis"
 RequestExecutionLevel user
 SetCompressor zlib
+!define MUI_ICON "..\src\Aegis.Desktop\Assets\aegis.ico"
+!define MUI_UNICON "..\src\Aegis.Desktop\Assets\aegis.ico"
 !define MUI_ABORTWARNING
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_INSTFILES
@@ -78,6 +80,9 @@ Section "Uninstall"
  Delete "$DESKTOP\Aegis.lnk"
  Delete "$SMPROGRAMS\Aegis\Aegis.lnk"
  RMDir "$SMPROGRAMS\Aegis"
+ ReadRegStr $0 HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "AegisPCMonitor"
+ StrCmp $0 '"$INSTDIR\Aegis.exe" --background' 0 +2
+ DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "AegisPCMonitor"
  DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Aegis"
  ; Suppression des fichiers installés et des éventuels composants téléchargés dans le dossier d'application
  Goto done

@@ -14,7 +14,7 @@ using Aegis.Application;
 using Aegis.Infrastructure;
 namespace Aegis.Desktop;
 public sealed record MetricRow(string Device,string Name,string Reading,string Source);
-public sealed record SessionRow(Guid Id,string Title,string Date);
+public sealed record SessionRow(Guid Id,string Title,string Date,bool Interrupted=false){public string Display=>(Interrupted?"À reprendre · ":"")+Title+" · "+Date;}
 public sealed record ChartPoint(double Seconds,double? Cpu,double? Memory);
 public sealed record ProcessRow(int Id,string Name);
 public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposable
@@ -55,7 +55,7 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
     private string presentMonPath="",frameStatus="Frames : aucune capture sélectionnée.";
     public string PresentMonPath{get=>presentMonPath;set{presentMonPath=value;Changed();}}
     public string FrameStatus{get=>frameStatus;private set{frameStatus=value;Changed();}}
-    public ProcessRow? SelectedProcess{get;set;}
+    private ProcessRow? selectedProcess;public ProcessRow? SelectedProcess{get=>selectedProcess;set{selectedProcess=value;Changed();}}
     public string Page {get=>page;private set{page=value;Changed();Changed(nameof(IsOverview));Changed(nameof(IsSessions));Changed(nameof(IsHardware));Changed(nameof(IsSettings));Changed(nameof(IsDiscover));}}
     public bool IsOverview=>Page=="Vue d’ensemble";public bool IsSessions=>Page=="Sessions";public bool IsHardware=>Page=="Matériel";public bool IsSettings=>Page=="Réglages";
     public string Status {get=>status;private set{status=value;statusHold=DateTimeOffset.UtcNow.AddSeconds(6);Changed();}}
@@ -83,7 +83,7 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
         store=new(data);
         WidgetCommand=new(()=>{if(widget is null){widget=new(this);widget.Closed+=(_,_)=>widget=null;widget.Show();}else widget.Activate();});
         OverviewCommand=new(()=>Page="Vue d’ensemble");SessionsCommand=new(()=>Page="Sessions");HardwareCommand=new(()=>Page="Matériel");SettingsCommand=new(()=>Page="Réglages");
-        MarkerCommand=new(()=>{recorder.Mark("Saccade ressentie");Status="Marqueur ajouté à la session.";},()=>recorder.Active);
+        MarkerCommand=new(()=>{recorder.Mark("Saccade ressentie");Status="Marqueur ajouté à la session.";},()=>recorder.Active&&recorder.Count>0);
         SaveSettingsCommand=new(()=>SaveSettings());
         RefreshProcessesCommand=new(RefreshProcesses);
         RecordCommand=new(ToggleRecord,Error);LoadCommand=new(LoadSession,Error);ExportCsvCommand=new(()=>Export(false),Error);ExportHtmlCommand=new(()=>Export(true),Error);
@@ -93,7 +93,7 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
         
         
         if(store.QuarantinedDatabase is not null)Status="La base de sessions était illisible : elle a été conservée à part ("+Path.GetFileName(store.QuarantinedDatabase)+") et une base neuve a été créée.";
-        InitializeProduct();
+        InitializeProduct();InitializeDaily();
         RefreshProcesses();
         collector.Sample+=s=>dispatcher.BeginInvoke(()=>Accept(s));collector.Fault+=e=>dispatcher.BeginInvoke(()=>_=OnCollectorFaultAsync(e));
     }
@@ -109,7 +109,7 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
         // Le tableau détaillé n'est reconstruit que lorsqu'il est visible : moins de travail pendant les sessions.
         if(IsHardware){MetricRows.Clear();foreach(var m in s.Metrics)MetricRows.Add(new(m.Device,m.Name,Format(m.Value,m.Unit),m.Source));}
         Chart.Add(new(s.MonotonicSeconds,Metrics.Latest(s,"cpu.load"),Metrics.Latest(s,"ram.load")));if(Chart.Count>120)Chart.RemoveAt(0);
-        recorder.Add(s);Changed(nameof(RecordingStatus));
+        recorder.Add(s);Changed(nameof(RecordingStatus));if(recorder.Count==1)MarkerCommand.Refresh();
         if(AlertsEnabled)
         {
             void Notice(string text){AlertHistory.Insert(0,s.Utc.ToLocalTime().ToString("T")+" · "+text);if(AlertHistory.Count>50)AlertHistory.RemoveAt(50);if(recorder.Active)recorder.Mark("Seuil : "+text);Status=text;}
@@ -158,9 +158,9 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
     private async Task<bool> SaveFinalAsync(Session s)
     {
         await checkpointGate.WaitAsync();
-        try{await store.SaveAsync(s);return true;}
+        try{await store.SaveAsync(s);unsavedSession=false;return true;}
         catch(Exception e) when(e is Microsoft.Data.Sqlite.SqliteException or IOException or InvalidDataException)
-        {Status="La session n’a pas pu être enregistrée ("+e.Message+"). Elle reste en mémoire : exportez-la en CSV avant de quitter.";return false;}
+        {unsavedSession=true;Status="La session n’a pas pu être enregistrée ("+e.Message+"). Elle reste en mémoire : exportez-la en CSV avant de quitter.";return false;}
         finally{checkpointGate.Release();}
     }
     /// <summary>Termine la session : mesures enregistrées d'abord, puis frames (échec toléré), puis bilan.</summary>
@@ -214,14 +214,15 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
             Status="Session démarrée · les mesures restent sur ce PC.";
         }
         Changed(nameof(RecordLabel));Changed(nameof(RecordingStatus));MarkerCommand.Refresh();
-    }    private async Task RefreshSessions(){var id=selected?.Id??SelectedSession?.Id;Sessions.Clear();foreach(var s in await store.ListAsync())Sessions.Add(new(s.Id,s.Name,s.Started.ToLocalTime().ToString("g")));SelectedSession=Sessions.FirstOrDefault(s=>s.Id==id);}
+    }    private async Task RefreshSessions(){var id=selected?.Id??SelectedSession?.Id;Sessions.Clear();foreach(var s in await store.ListAsync())Sessions.Add(new(s.Id,s.Name,s.Started.ToLocalTime().ToString("g"),s.Ended is null));SelectedSession=Sessions.FirstOrDefault(s=>s.Id==id);}
     private async Task LoadSession(){if(SelectedSession is null)return;selected=await store.LoadAsync(SelectedSession.Id);if(selected is not null)ShowSummary(selected);}
     private static string DescribeFrames(FrameCapture f)=>f.Stats is {} x?$"{f.Process} · {x.Frames} présentations · FPS moyens {x.AverageFps:F1} · 1% low {x.OnePercentLowFps:F1} · p99 {x.P99Milliseconds:F2} ms\n{f.Status}":f.Status;
-    private void ShowSummary(Session s){var a=SessionAnalysis.Summarize(s);Summary=$"{s.Name} · {a.DurationSeconds:F0} s · {a.SampleCount} échantillons\n\n"+(s.Frames is {} f?DescribeFrames(f)+"\n\n":"")+string.Join("\n\n",a.Findings.Select(f=>$"{f.Title}\n{f.Detail}\nÀ vérifier : {f.NextCheck}"));}
+    private void ShowSummary(Session s){var a=SessionAnalysis.Summarize(s);Summary=(s.Ended is null?"Sauvegarde intermédiaire retrouvée : la session a pu être interrompue.\n\n":"")+$"{s.Name} · {a.DurationSeconds:F0} s · {a.SampleCount} échantillons\n\n"+(s.Frames is {} f?DescribeFrames(f)+"\n\n":"")+string.Join("\n\n",a.Findings.Select(f=>$"{f.Title}\n{f.Detail}\nÀ vérifier : {f.NextCheck}"));}
     private void RefreshProcesses()
     {
-        Processes.Clear();Processes.Add(new(0,"Capteurs uniquement"));
+        int previous=SelectedProcess?.Id??0;Processes.Clear();Processes.Add(new(0,"Capteurs uniquement"));
         foreach(var p in Process.GetProcesses().OrderBy(p=>p.ProcessName)){using(p){try{if(p.MainWindowHandle!=IntPtr.Zero)Processes.Add(new(p.Id,p.ProcessName));}catch(Exception e)when(e is InvalidOperationException or System.ComponentModel.Win32Exception){}}}
+        SelectedProcess=Processes.FirstOrDefault(p=>p.Id==previous)??Processes[0];
     }
     private Session Context()=>selected??(recorder.Active?recorder.Current():new(Guid.NewGuid(),"Vue en direct",DateTimeOffset.UtcNow,null,"",live.ToArray(),[]));
     private async Task Export(bool html)
@@ -239,16 +240,16 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
         string Delta(double? first,double? second)=>first.HasValue&&second.HasValue?$"{first:F1} → {second:F1} ({second-first:+0.0;-0.0;0.0} points)":"Mesure absente";
         Comparison=$"{a.Name} → {b.Name}\nCPU moyen : {Delta(x.CpuAverage,y.CpuAverage)}\nRAM maximale : {Delta(x.MemoryPeak,y.MemoryPeak)}\n\nComparaison descriptive : scène, durée et réglages ne sont pas validés comme identiques. Aucune conclusion causale.\nConditions A : {a.Conditions}\nConditions B : {b.Conditions}";
     }
-    private sealed record Settings(string PresentMon="",bool Alerts=false,double CpuLimit=95,double RamLimit=90,double TempLimit=85,string Theme="Forest",bool AutoUpdates=true,DateTimeOffset LastUpdateCheck=default);
+    private sealed record Settings(string PresentMon="",bool Alerts=false,double CpuLimit=95,double RamLimit=90,double TempLimit=85,string Theme="Forest",bool AutoUpdates=true,DateTimeOffset LastUpdateCheck=default,bool MinimizeToTray=true,bool HotkeyEnabled=true);
     private void LoadSettings()
     {
-        try{var path=Path.Combine(data,"settings.json");if(!File.Exists(path))return;var settings=JsonSerializer.Deserialize<Settings>(File.ReadAllText(path));if(settings is null)return;PresentMonPath=settings.PresentMon;AlertsEnabled=settings.Alerts;CpuThreshold=settings.CpuLimit;RamThreshold=settings.RamLimit;TempThreshold=settings.TempLimit;Theme=settings.Theme;AutoUpdates=settings.AutoUpdates;lastUpdateCheck=settings.LastUpdateCheck;}
+        try{var path=Path.Combine(data,"settings.json");if(!File.Exists(path))return;var settings=JsonSerializer.Deserialize<Settings>(File.ReadAllText(path));if(settings is null)return;PresentMonPath=settings.PresentMon;AlertsEnabled=settings.Alerts;CpuThreshold=settings.CpuLimit;RamThreshold=settings.RamLimit;TempThreshold=settings.TempLimit;Theme=settings.Theme;AutoUpdates=settings.AutoUpdates;lastUpdateCheck=settings.LastUpdateCheck;MinimizeToTray=settings.MinimizeToTray;HotkeyEnabled=settings.HotkeyEnabled;}
         catch(Exception e)when(e is IOException or JsonException or UnauthorizedAccessException){Status="Réglages ignorés : "+e.Message;}
     }
     private bool SaveSettings(bool announce=true)
     {
-        try{var path=Path.Combine(data,"settings.json");File.WriteAllText(path+".tmp",JsonSerializer.Serialize(new Settings(PresentMonPath,AlertsEnabled,CpuThreshold,RamThreshold,TempThreshold,Theme,AutoUpdates,lastUpdateCheck)));File.Move(path+".tmp",path,true);if(announce)Status="Réglages enregistrés.";return true;}
-        catch(Exception e)when(e is IOException or UnauthorizedAccessException){Error(e);return false;}
+        try{if(announce)StartupRegistration.SetEnabled(Path.Combine(AppContext.BaseDirectory,"Aegis.exe"),StartWithWindows);var path=Path.Combine(data,"settings.json");File.WriteAllText(path+".tmp",JsonSerializer.Serialize(new Settings(PresentMonPath,AlertsEnabled,CpuThreshold,RamThreshold,TempThreshold,Theme,AutoUpdates,lastUpdateCheck,MinimizeToTray,HotkeyEnabled)));File.Move(path+".tmp",path,true);if(announce)Status="Réglages enregistrés.";return true;}
+        catch(Exception e)when(e is IOException or UnauthorizedAccessException or InvalidOperationException or System.Security.SecurityException){Error(e);return false;}
     }
     private static async Task Safe(Func<Task> step){try{await step();}catch(Exception e){App.Log("Fermeture : "+e);}}
     /// <summary>Fermeture : chaque étape est isolée pour que la session soit enregistrée et les processus enfants arrêtés quoi qu'il arrive.</summary>

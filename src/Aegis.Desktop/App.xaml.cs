@@ -4,6 +4,7 @@ namespace Aegis.Desktop;
 public partial class App : System.Windows.Application
 {
     private FileStream? instanceLock;
+    private InstanceActivation? activation;
     /// <summary>Journal local des erreurs inattendues (aucun envoi réseau, aucune télémétrie).</summary>
     internal static void Log(string text)
     {
@@ -19,11 +20,12 @@ public partial class App : System.Windows.Application
     protected override void OnStartup(StartupEventArgs e)
     {
         try { instanceLock=new FileStream(Path.Combine(AppContext.BaseDirectory,".aegis-running.lock"),FileMode.OpenOrCreate,FileAccess.ReadWrite,FileShare.Read); }
-        catch(IOException){MessageBox.Show("Aegis est déjà ouvert, ou ses fichiers sont en cours de mise à jour.","Aegis");Shutdown();return;}
+        catch(IOException){if(!InstanceActivation.TryShowExisting())MessageBox.Show("Aegis est déjà ouvert, ou ses fichiers sont en cours de mise à jour.","Aegis");Shutdown();return;}
         DispatcherUnhandledException += (_,a)=>{ Log(a.Exception.ToString()); a.Handled=true; if(a.Exception is System.Windows.Markup.XamlParseException){Shutdown(1);return;} MessageBox.Show("Une erreur inattendue s’est produite : "+a.Exception.Message+"\n\nLe détail est dans %LOCALAPPDATA%\\AegisNext\\logs\\aegis.log.","Aegis · erreur",MessageBoxButton.OK,MessageBoxImage.Warning); };
         TaskScheduler.UnobservedTaskException += (_,a)=>{ Log("Tâche non observée : "+a.Exception); a.SetObserved(); };
         AppDomain.CurrentDomain.UnhandledException += (_,a)=>Log("Erreur fatale : "+a.ExceptionObject);
+        activation=new();_ = activation.ListenAsync(()=>Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle,()=>{if(MainWindow is {} window){window.Show();window.WindowState=WindowState.Normal;window.Activate();}}));
         base.OnStartup(e);
     }
-    protected override void OnExit(ExitEventArgs e){instanceLock?.Dispose();base.OnExit(e);}
+    protected override void OnExit(ExitEventArgs e){activation?.Dispose();instanceLock?.Dispose();base.OnExit(e);}
 }
