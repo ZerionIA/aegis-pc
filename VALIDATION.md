@@ -12,7 +12,7 @@ Campagne du 25 octobre 2026 sur Windows x64.
 
 Les captures ne démontrent pas une navigation clavier complète. Aucun clic automatique vers X ou mail n'est exécuté. Les serveurs MX de zerionia.com répondent, mais la boîte contact@zerionia.com n'a pas été testée par envoi d'e-mail.
 
-Le téléchargement d'une future release et la réinstallation au moyen du programme de mise à jour doivent aussi être éprouvés en situation réelle. Les résultats après publication sont consignés dans la livraison locale et pourront compléter ce rapport. Les tests HTTP simulés seuls ne constituent pas une preuve de redémarrage après mise à jour.
+Après publication : téléchargement réel de l'installateur public 0.3 depuis GitHub via ReleaseUpdateClient, vérification de son SHA-256, attente de fermeture de l'application, installation et redémarrage réussis (END_TO_END_UPDATE_OK). Le programme de mise à jour utilisé pour ce scénario était une compilation isolée portant l'identifiant inférieur 0.2.9-beta.1, non publiée, afin de tester la transition vers la release officielle sans créer de fausse version publique. La migration depuis l'ancien installateur 0.2 avait été testée séparément. Les tests simulés ne sont pas confondus avec ce scénario réel.
 
 ## Limites
 

@@ -46,5 +46,5 @@ Contact : contact@zerionia.com
 
 ## Publication
 
-Visuels SVG originaux joints : 1200×675 pour X et 1200×300 pour les sites. Aucun logo concurrent, aucune donnée utilisateur ni capture de session réelle.
+Visuels PNG prêts pour X et SVG originaux éditables joints : 1200×675 pour X et 1200×300 pour les sites. Aucun logo concurrent, aucune donnée utilisateur ni capture de session réelle.
 Les URL de studio, X et GitHub sont sans traçage. Ne pas annoncer de hausse de FPS, de diagnostic garanti ou de compatibilité anti-cheat universelle. Ne pas diffuser en masse ou poster dans une communauté sans respecter ses règles.
