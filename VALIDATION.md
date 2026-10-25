@@ -1,15 +1,13 @@
-# Validation — 0.4.0-beta.1
+# Validation — 0.5.0-beta.1
 
-Campagne du 25 octobre 2026 sur Windows x64. Compilation Release sans erreur ni avertissement.
+Campagne Windows x64 du 25 octobre 2026.
 
-- 57 vérifications réussies, dont cinq contrôles avec le collecteur réel. Les 52 vérifications de base couvrent : calculs, persistance, versions et intégrité des mises à jour, commande de démarrage avec espaces, rapport support expurgé, métadonnées de sessions interrompues/completes et rechargement.
-- Scénario intégré réel : icône déclarée visible, masquage/restauration, démarrage en arrière-plan et deuxième processus réactivant la fenêtre existante.
-- Enregistrement avec collecteur réel, marqueur ajouté par la même route de messages que le raccourci, dernier bilan rechargé, recherche et rapport JSON créés. Le test appelle cette route dans l'app ; aucune frappe globale dans un jeu n'est simulée.
-- Valeur du démarrage Windows inchangée avant/après ces essais. L'activation réelle au prochain login Windows n'a pas été testée ; l'option n'a pas été imposée au PC de développement.
-- Refus réel de sauvegarde SQLite provoqué en lecture seule dans une base isolée, puis droits restaurés : la session en attente reste récupérée après changement de sélection. Une nouvelle capture est bloquée tant que la sauvegarde précédente échoue.
-- Captures de la fenêtre inspectées, notamment après correction du nom et du contraste des listes déroulantes.
-- CI et packaging GitHub réussis. Paquet officiel téléchargé par le client de l’app et SHA-256 vérifié. Updater réel 0.3 → 0.4 : fermeture normale, installation retour 0, version installée et relancée vérifiée. Contenu logique de la base inchangé (base vide dans cet essai) ; migration de sessions peuplées vérifiée lors de la campagne précédente. Refus correct de l’installateur si une autre instance conserve le verrou. Site public HTTP 200 et liens de la 0.4 contrôlés.
+- 74 contrôles réussis : 69 de base et cinq avec le collecteur réel. Quinze régressions de jeu couvrent les lanceurs, correspondances exactes, temporisation, arrêt manuel, relancement et réutilisation de PID.
+- Scénario réel avec un processus factice isolé : détection, début de session, HUD affiché, fin du processus, arrêt automatique et bilan sauvegardé. Les styles Windows sans activation et transparence aux clics sont inspectés sur le handle du HUD. Ce n’est pas un test de frappe ou de clic physique dans LoL.
+- Une vraie instance de League of Legends a été reconnue pendant les essais ; le scénario reproductible a ensuite été isolé sur le processus factice. Aucun processus de jeu réel n’a été fermé ou modifié.
+- Captures inspectées : HUD, réglages par onglets en anglais et capteurs groupés. Recherche capteur, stabilité de l’objet de groupe entre deux mesures, complétude des packs et sérialisation des préférences vérifiées par le scénario intégré.
+- Les tests précédents de sauvegarde refusée, quarantaine SQLite, mises à jour et conservation des données restent présents. Démarrage Windows jamais activé par ces essais.
 
 ## Limites
 
-Bêta non signée Authenticode. Intégrité des mises à jour vérifiée via HTTPS et le SHA-256 de GitHub, sans signature indépendante de l'éditeur. Compatibilité des raccourcis et capteurs à vérifier avec chaque environnement de jeu ; aucune promesse anti-cheat universelle. Diversité matérielle, accessibilité complète et stabilité longue durée restent à éprouver. L'app ne modifie pas les réglages matériels et ne garantit pas un gain de FPS. L'assistant IA reste absent.
+Bêta non signée Authenticode. HUD externe destiné aux modes fenêtré/sans bordure ; le plein écran exclusif peut le masquer. Pas de compatibilité anti-cheat universelle ou certification Riot revendiquée. Aucune partie LoL complète, clic physique traversant en partie ou stabilité longue durée ne sont certifiés par cette campagne. Pas de FPS en direct dans le HUD : PresentMon produit des statistiques après capture selon les droits ETW et le jeu. Les capteurs matériels indisponibles restent absents. Les noms matériels, contenus utilisateur et diagnostics externes gardent leur langue d’origine ; l’interface principale et les observations courantes ont leurs packs français/anglais. L’assistant IA reste retiré.

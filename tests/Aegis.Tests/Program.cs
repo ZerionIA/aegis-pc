@@ -72,4 +72,5 @@ using(var c=new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={readOnlyDb
 {c.Open();using var cmd=c.CreateCommand();cmd.CommandText="SELECT count(*) FROM sessions WHERE id='original'";Check(Convert.ToInt64(cmd.ExecuteScalar())==1,"Readonly startup failure preserves original records");}
 await UpdateTests.RunAsync(Check,root);
 await DailyTests.RunAsync(Check,root);
+GameTests.Run(Check);
 Console.WriteLine($"{passed} checks passed.");

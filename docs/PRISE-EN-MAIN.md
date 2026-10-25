@@ -1,5 +1,11 @@
 # Première session avec Aegis
 
+## Jouer avec le HUD et les sessions automatiques
+
+Dans Réglages → Jeux, activez ou désactivez les sessions automatiques. Dans Affichage en jeu, choisissez le coin, la taille et l’opacité du HUD. Pour LoL, préférez Sans bordure ou Fenêtré. Le client seul ne lance pas de session : le processus de partie doit être présent. Dans Apparence, choisissez Français ou English, puis Enregistrer.
+
+Les FPS ne sont pas affichés en direct dans le HUD. La capture PresentMon facultative donne des statistiques après arrêt. Consultez aussi le [guide illustré du site](https://aegis-pc-monitor.raptorafc.chatgpt.site/guide/).
+
 ## Retrouver une saccade
 
 1. Ouvrir **Sessions**, donner un nom parlant : jeu, scène, résolution et réglages.

@@ -2,11 +2,20 @@
 
 **Votre PC, en clair.** Monitoring Windows gratuit et open source. Sans compte, publicité, paiement ni télémétrie applicative.
 
-**0.4.0-beta.1 · Windows 10/11 x64 · Bêta publique non signée.**
+**0.5.0-beta.1 · Windows 10/11 x64 · Bêta publique non signée.**
 
-[**Télécharger l’installateur Windows (.exe)**](https://github.com/ZerionIA/aegis-pc/releases/download/v0.4.0-beta.1/Aegis-0.4.0-beta.1-Setup.exe) · [Guide d’installation et première session](https://aegis-pc-monitor.raptorafc.chatgpt.site/guide/) · [Site officiel](https://aegis-pc-monitor.raptorafc.chatgpt.site/)
+[**Télécharger l’installateur Windows (.exe)**](https://github.com/ZerionIA/aegis-pc/releases/download/v0.5.0-beta.1/Aegis-0.5.0-beta.1-Setup.exe) · [Guide d’installation et première session](https://aegis-pc-monitor.raptorafc.chatgpt.site/guide/) · [Site officiel](https://aegis-pc-monitor.raptorafc.chatgpt.site/)
 
-Installateur de **77,3 Mo**, runtime inclus. [Notes de version et SHA-256](https://github.com/ZerionIA/aegis-pc/releases/tag/v0.4.0-beta.1) · [Aide et problèmes](https://github.com/ZerionIA/aegis-pc/issues) · [Confidentialité](PRIVACY.md)
+Installateur Windows, runtime inclus. [Notes de version et SHA-256](https://github.com/ZerionIA/aegis-pc/releases/tag/v0.5.0-beta.1) · [Aide et problèmes](https://github.com/ZerionIA/aegis-pc/issues) · [Confidentialité](PRIVACY.md)
+
+## Pensé pour jouer
+
+- **HUD discret en jeu** : sans bordure, en haut à gauche par défaut, CPU/GPU/RAM et températures CPU/GPU disponibles. Clics traversants, sans prise de focus. Position dans quatre coins, taille et opacité réglables.
+- **Sessions automatiques** : détection locale de jeux reconnus, dont le processus de partie LoL, et noms d’exécutables personnalisables. Deux observations avant démarrage ; environ 12 secondes d’absence avant arrêt. Un arrêt manuel bloque la reprise jusqu’au prochain lancement.
+- **Capteurs classés** par CPU, GPU, RAM, réseau, stockage et système, avec recherche et filtre. Valeurs disponibles d’abord, puis tri température/charge/puissance/fréquence. Groupes repliables sans réinitialisation à chaque mesure.
+- **Réglages par onglets** : Jeux, Affichage en jeu, Général, Apparence et langues, Alertes, Mises à jour, Avancé. Packs d’interface français et anglais intégrés, changement immédiat. Les noms de capteurs, de sessions et les détails techniques externes restent natifs.
+
+Pour LoL, utiliser **Sans bordure** ou **Fenêtré**. Le HUD externe peut être masqué en plein écran exclusif ; aucune garantie universelle anti-cheat. Les FPS ne sont pas affichés en direct : les statistiques de présentation sont calculées après capture PresentMon, activable séparément.
 
 ## En trois gestes
 
@@ -36,7 +45,7 @@ Le rapport support est créé localement après choix d'un fichier ; il contient
 
 ## Installation
 
-Télécharger Aegis-0.4.0-beta.1-Setup.exe depuis une GitHub Release. Le runtime .NET est inclus. Installation par utilisateur sans élévation automatique. Fermer Aegis avant mise à jour ou désinstallation. Les données restent dans %LOCALAPPDATA%/AegisNext après désinstallation.
+Télécharger Aegis-0.5.0-beta.1-Setup.exe depuis une GitHub Release. Le runtime .NET est inclus. Installation par utilisateur sans élévation automatique. Fermer Aegis avant mise à jour ou désinstallation. Les données restent dans %LOCALAPPDATA%/AegisNext après désinstallation.
 
 Bêta non signée : Windows peut afficher un avertissement. Vérifier la provenance et SHA256SUMS.txt. Aegis ne demande pas de désactiver une protection Windows. Le panneau de bureau peut être masqué par le plein écran exclusif ; ce n'est pas un overlay injecté.
 

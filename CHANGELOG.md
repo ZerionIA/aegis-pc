@@ -1,5 +1,14 @@
 # Historique
 
+## 0.5.0-beta.1 — 25 octobre 2026
+
+- Navigation sans numéros et réglages par onglets.
+- HUD externe sans bordure, clics traversants et sans prise de focus ; quatre coins, opacité et taille. Températures CPU/GPU séparées.
+- Détection locale des jeux et sessions automatiques, contrôle de lancement/arrêt, liste personnalisée et capture PresentMon facultative.
+- Capteurs groupés par composant, filtres, recherche, valeurs disponibles en priorité et groupes repliés préservés.
+- Packs d’interface français/anglais, menu système traduit et préférences persistées.
+
+
 ## 0.4.0-beta.1 — 25 octobre 2026
 
 - Icône de marque près de l’horloge et menu des commandes de session.

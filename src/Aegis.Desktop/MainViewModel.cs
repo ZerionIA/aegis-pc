@@ -40,7 +40,7 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
     public ObservableCollection<string> AlertHistory{get;}=[];
     public Command WidgetCommand{get;}
     public static string VersionText=>(typeof(MainViewModel).Assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute),false).FirstOrDefault() as System.Reflection.AssemblyInformationalVersionAttribute)?.InformationalVersion.Split('+')[0]??"0.2.0";
-    public string AppVersion => $"Aegis {VersionText} · Bêta";
+    public string AppVersion => $"Aegis {VersionText} · {(Language=="en"?"Beta":"Bêta")}";
     private readonly CancellationTokenSource lifetime=new();
     private readonly List<Snapshot> live=[];
     private Snapshot? latest;
@@ -56,7 +56,7 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
     public string PresentMonPath{get=>presentMonPath;set{presentMonPath=value;Changed();}}
     public string FrameStatus{get=>frameStatus;private set{frameStatus=value;Changed();}}
     private ProcessRow? selectedProcess;public ProcessRow? SelectedProcess{get=>selectedProcess;set{selectedProcess=value;Changed();}}
-    public string Page {get=>page;private set{page=value;Changed();Changed(nameof(IsOverview));Changed(nameof(IsSessions));Changed(nameof(IsHardware));Changed(nameof(IsSettings));Changed(nameof(IsDiscover));}}
+    public string Page {get=>page;private set{page=value;if(IsHardware&&latest is not null)RefreshSensorGroups(latest);Changed();Changed(nameof(IsOverview));Changed(nameof(IsSessions));Changed(nameof(IsHardware));Changed(nameof(IsSettings));Changed(nameof(IsDiscover));}}
     public bool IsOverview=>Page=="Vue d’ensemble";public bool IsSessions=>Page=="Sessions";public bool IsHardware=>Page=="Matériel";public bool IsSettings=>Page=="Réglages";
     public string Status {get=>status;private set{status=value;statusHold=DateTimeOffset.UtcNow.AddSeconds(6);Changed();}}
     /// <summary>Message d'ambiance : n'écrase jamais un message d'action récent.</summary>
@@ -70,7 +70,7 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
 
     private SessionRow? selectedSession;public SessionRow? SelectedSession{get=>selectedSession;set{selectedSession=value;Changed();}}public SessionRow? CompareSession{get;set;}
     public string RecordLabel=>recorder.Active?"Arrêter et conserver":"Démarrer une session";
-    public string RecordingStatus=>recorder.Active?$"Enregistrement · {recorder.Count} échantillons":"Prêt · collecte à 1 Hz";
+    public string RecordingStatus=>recorder.Active?$"{(Language=="en"?"Recording":"Enregistrement")} · {recorder.Count} {(Language=="en"?"samples":"échantillons")}":"Prêt · collecte à 1 Hz";
 
     public Command OverviewCommand{get;}public Command SessionsCommand{get;}public Command HardwareCommand{get;}public Command SettingsCommand{get;}public Command MarkerCommand{get;}public Command SaveSettingsCommand{get;}
     public AsyncCommand RecordCommand{get;}public AsyncCommand LoadCommand{get;}public AsyncCommand ExportCsvCommand{get;}public AsyncCommand ExportHtmlCommand{get;}public AsyncCommand CompareCommand{get;}
@@ -81,19 +81,19 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
         data=dataIndex>=0&&dataIndex+1<arguments.Length?Path.GetFullPath(arguments[dataIndex+1]):Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"AegisNext");
         Directory.CreateDirectory(data);
         store=new(data);
-        WidgetCommand=new(()=>{if(widget is null){widget=new(this);widget.Closed+=(_,_)=>widget=null;widget.Show();}else widget.Activate();});
+        WidgetCommand=new(OpenHud);
         OverviewCommand=new(()=>Page="Vue d’ensemble");SessionsCommand=new(()=>Page="Sessions");HardwareCommand=new(()=>Page="Matériel");SettingsCommand=new(()=>Page="Réglages");
         MarkerCommand=new(()=>{recorder.Mark("Saccade ressentie");Status="Marqueur ajouté à la session.";},()=>recorder.Active&&recorder.Count>0);
         SaveSettingsCommand=new(()=>SaveSettings());
         RefreshProcessesCommand=new(RefreshProcesses);
-        RecordCommand=new(ToggleRecord,Error);LoadCommand=new(LoadSession,Error);ExportCsvCommand=new(()=>Export(false),Error);ExportHtmlCommand=new(()=>Export(true),Error);
+        RecordCommand=new(async()=>{ManualSessionIntent();await ToggleRecord();},Error);LoadCommand=new(LoadSession,Error);ExportCsvCommand=new(()=>Export(false),Error);ExportHtmlCommand=new(()=>Export(true),Error);
         CompareCommand=new(Compare,Error);
         LoadSettings();
         if(string.IsNullOrEmpty(PresentMonPath)&&File.Exists(Path.Combine(AppContext.BaseDirectory,"tools","PresentMon.exe")))PresentMonPath=Path.Combine(AppContext.BaseDirectory,"tools","PresentMon.exe");
         
         
         if(store.QuarantinedDatabase is not null)Status="La base de sessions était illisible : elle a été conservée à part ("+Path.GetFileName(store.QuarantinedDatabase)+") et une base neuve a été créée.";
-        InitializeProduct();InitializeDaily();
+        InitializeProduct();InitializeDaily();InitializeGaming();
         RefreshProcesses();
         collector.Sample+=s=>dispatcher.BeginInvoke(()=>Accept(s));collector.Fault+=e=>dispatcher.BeginInvoke(()=>_=OnCollectorFaultAsync(e));
     }
@@ -105,9 +105,10 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
         if(++healthySamples>=30)collectorRestarts=0;
         Cpu=Format(Metrics.Latest(s,"cpu.load"),"%");Memory=Format(Metrics.Latest(s,"ram.load"),"%");
         var g=s.Metrics.FirstOrDefault(m=>m.Id.Contains("gpu")&&m.Unit=="%"&&m.Name.Contains("Core",StringComparison.OrdinalIgnoreCase));Gpu=Format(g?.Value,"%");SelectedDevice=g?.Device??s.Metrics.FirstOrDefault(m=>m.Id.Contains("gpu"))?.Device??"GPU non exposé";
-        var temps=s.Metrics.Where(m=>m.Unit=="°C"&&m.Value.HasValue).ToArray();Temperature=Format(temps.Length>0?temps.Max(m=>m.Value):null,"°C");
+        var temps=s.Metrics.Where(m=>Metrics.IsTemperatureReading(m)&&m.State==MetricState.Available&&m.Value.HasValue).ToArray();Temperature=Format(temps.Length>0?temps.Max(m=>m.Value):null,"°C");
         // Le tableau détaillé n'est reconstruit que lorsqu'il est visible : moins de travail pendant les sessions.
-        if(IsHardware){MetricRows.Clear();foreach(var m in s.Metrics)MetricRows.Add(new(m.Device,m.Name,Format(m.Value,m.Unit),m.Source));}
+        if(IsHardware)RefreshSensorGroups(s);
+        Changed(nameof(CpuTemperature));Changed(nameof(GpuTemperature));Changed(nameof(HudSession));
         Chart.Add(new(s.MonotonicSeconds,Metrics.Latest(s,"cpu.load"),Metrics.Latest(s,"ram.load")));if(Chart.Count>120)Chart.RemoveAt(0);
         recorder.Add(s);Changed(nameof(RecordingStatus));if(recorder.Count==1)MarkerCommand.Refresh();
         if(AlertsEnabled)
@@ -191,7 +192,9 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
         };
         if(e is not (OperationCanceledException or InvalidOperationException or FileNotFoundException or IOException or InvalidDataException))App.Log(e.ToString());
     }
-    private async Task ToggleRecord()
+    private readonly SemaphoreSlim recordGate=new(1,1);
+    private async Task ToggleRecord(){await recordGate.WaitAsync();try{await ToggleRecordCore();}finally{recordGate.Release();}}
+    private async Task ToggleRecordCore()
     {
         if(recorder.Active)await FinishRecordingAsync();
         else
@@ -211,14 +214,14 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
                 {FrameStatus="Frames indisponibles : "+e.Message+" Les capteurs sont enregistrés normalement.";}
             }
             else FrameStatus="Capteurs uniquement · aucun processus sélectionné pour les frames.";
-            recorder.Start(SessionName,Conditions);lastCheckpoint=DateTimeOffset.UtcNow.AddSeconds(-50);
+            recordingSince=DateTimeOffset.UtcNow;recorder.Start(SessionName,Conditions);lastCheckpoint=DateTimeOffset.UtcNow.AddSeconds(-50);
             Status="Session démarrée · les mesures restent sur ce PC.";
         }
         Changed(nameof(RecordLabel));Changed(nameof(RecordingStatus));MarkerCommand.Refresh();
     }    private async Task RefreshSessions(){var id=selected?.Id??SelectedSession?.Id;Sessions.Clear();foreach(var s in await store.ListAsync())Sessions.Add(new(s.Id,s.Name,s.Started.ToLocalTime().ToString("g"),s.Ended is null));SelectedSession=Sessions.FirstOrDefault(s=>s.Id==id);}
     private async Task LoadSession(){if(SelectedSession is null)return;selected=await store.LoadAsync(SelectedSession.Id);if(selected is not null)ShowSummary(selected);}
     private static string DescribeFrames(FrameCapture f)=>f.Stats is {} x?$"{f.Process} · {x.Frames} présentations · FPS moyens {x.AverageFps:F1} · 1% low {x.OnePercentLowFps:F1} · p99 {x.P99Milliseconds:F2} ms\n{f.Status}":f.Status;
-    private void ShowSummary(Session s){var a=SessionAnalysis.Summarize(s);Summary=(s.Ended is null?"Sauvegarde intermédiaire retrouvée : la session a pu être interrompue.\n\n":"")+$"{s.Name} · {a.DurationSeconds:F0} s · {a.SampleCount} échantillons\n\n"+(s.Frames is {} f?DescribeFrames(f)+"\n\n":"")+string.Join("\n\n",a.Findings.Select(f=>$"{f.Title}\n{f.Detail}\nÀ vérifier : {f.NextCheck}"));}
+    private void ShowSummary(Session s){var a=SessionAnalysis.Summarize(s);Summary=(s.Ended is null?"Sauvegarde intermédiaire retrouvée : la session a pu être interrompue.\n\n":"")+$"{s.Name} · {a.DurationSeconds:F0} s · {a.SampleCount} {(Language=="en"?"samples":"échantillons")}\n\n"+(s.Frames is {} f?DescribeFrames(f)+"\n\n":"")+string.Join("\n\n",a.Findings.Select(f=>$"{L.Current.Translate(f.Title)}\n{L.Current.Translate(f.Detail)}\n{(Language=="en"?"Check":"À vérifier")} : {L.Current.Translate(f.NextCheck)}"));}
     private void RefreshProcesses()
     {
         int previous=SelectedProcess?.Id??0;Processes.Clear();Processes.Add(new(0,"Capteurs uniquement"));
@@ -241,22 +244,22 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
         string Delta(double? first,double? second)=>first.HasValue&&second.HasValue?$"{first:F1} → {second:F1} ({second-first:+0.0;-0.0;0.0} points)":"Mesure absente";
         Comparison=$"{a.Name} → {b.Name}\nCPU moyen : {Delta(x.CpuAverage,y.CpuAverage)}\nRAM maximale : {Delta(x.MemoryPeak,y.MemoryPeak)}\n\nComparaison descriptive : scène, durée et réglages ne sont pas validés comme identiques. Aucune conclusion causale.\nConditions A : {a.Conditions}\nConditions B : {b.Conditions}";
     }
-    private sealed record Settings(string PresentMon="",bool Alerts=false,double CpuLimit=95,double RamLimit=90,double TempLimit=85,string Theme="Forest",bool AutoUpdates=true,DateTimeOffset LastUpdateCheck=default,bool MinimizeToTray=true,bool HotkeyEnabled=true);
+    private sealed record Settings(string PresentMon="",bool Alerts=false,double CpuLimit=95,double RamLimit=90,double TempLimit=85,string Theme="Forest",bool AutoUpdates=true,DateTimeOffset LastUpdateCheck=default,bool MinimizeToTray=true,bool HotkeyEnabled=true,string Language="fr",bool AutoRecordGames=true,bool ShowGameHud=true,string CustomGames="",string HudCorner="TopLeft",double HudOpacity=.82,double HudScale=1,bool AutoGameFrames=false);
     private void LoadSettings()
     {
-        try{var path=Path.Combine(data,"settings.json");if(!File.Exists(path))return;var settings=JsonSerializer.Deserialize<Settings>(File.ReadAllText(path));if(settings is null)return;PresentMonPath=settings.PresentMon;AlertsEnabled=settings.Alerts;CpuThreshold=settings.CpuLimit;RamThreshold=settings.RamLimit;TempThreshold=settings.TempLimit;Theme=settings.Theme;AutoUpdates=settings.AutoUpdates;lastUpdateCheck=settings.LastUpdateCheck;MinimizeToTray=settings.MinimizeToTray;HotkeyEnabled=settings.HotkeyEnabled;}
+        try{var path=Path.Combine(data,"settings.json");if(!File.Exists(path))return;var settings=JsonSerializer.Deserialize<Settings>(File.ReadAllText(path));if(settings is null)return;PresentMonPath=settings.PresentMon;AlertsEnabled=settings.Alerts;CpuThreshold=settings.CpuLimit;RamThreshold=settings.RamLimit;TempThreshold=settings.TempLimit;Theme=settings.Theme;AutoUpdates=settings.AutoUpdates;lastUpdateCheck=settings.LastUpdateCheck;MinimizeToTray=settings.MinimizeToTray;HotkeyEnabled=settings.HotkeyEnabled;Language=settings.Language;AutoRecordGames=settings.AutoRecordGames;ShowGameHud=settings.ShowGameHud;CustomGameExecutables=settings.CustomGames;HudCorner=settings.HudCorner;HudOpacity=settings.HudOpacity;HudScale=settings.HudScale;AutoGameFrames=settings.AutoGameFrames;}
         catch(Exception e)when(e is IOException or JsonException or UnauthorizedAccessException){Status="Réglages ignorés : "+e.Message;}
     }
     private bool SaveSettings(bool announce=true)
     {
-        try{if(announce)StartupRegistration.SetEnabled(Path.Combine(AppContext.BaseDirectory,"Aegis.exe"),StartWithWindows);var path=Path.Combine(data,"settings.json");File.WriteAllText(path+".tmp",JsonSerializer.Serialize(new Settings(PresentMonPath,AlertsEnabled,CpuThreshold,RamThreshold,TempThreshold,Theme,AutoUpdates,lastUpdateCheck,MinimizeToTray,HotkeyEnabled)));File.Move(path+".tmp",path,true);if(announce)Status="Réglages enregistrés.";return true;}
+        try{if(announce)StartupRegistration.SetEnabled(Path.Combine(AppContext.BaseDirectory,"Aegis.exe"),StartWithWindows);var path=Path.Combine(data,"settings.json");File.WriteAllText(path+".tmp",JsonSerializer.Serialize(new Settings(PresentMonPath,AlertsEnabled,CpuThreshold,RamThreshold,TempThreshold,Theme,AutoUpdates,lastUpdateCheck,MinimizeToTray,HotkeyEnabled,Language,AutoRecordGames,ShowGameHud,CustomGameExecutables,HudCorner,HudOpacity,HudScale,AutoGameFrames)));File.Move(path+".tmp",path,true);if(announce)Status="Réglages enregistrés.";return true;}
         catch(Exception e)when(e is IOException or UnauthorizedAccessException or InvalidOperationException or System.Security.SecurityException){Error(e);return false;}
     }
     private static async Task Safe(Func<Task> step){try{await step();}catch(Exception e){App.Log("Fermeture : "+e);}}
     /// <summary>Fermeture : chaque étape est isolée pour que la session soit enregistrée et les processus enfants arrêtés quoi qu'il arrive.</summary>
     public async ValueTask DisposeAsync()
     {
-        shuttingDown=true;updateTimer.Stop();updateRequest?.Cancel();
+        shuttingDown=true;L.Current.Changed-=OnLanguageChanged;gameTimer.Stop();updateTimer.Stop();updateRequest?.Cancel();
         widget?.Close();
         await Safe(async()=>await lifetime.CancelAsync());
         await Safe(async()=>

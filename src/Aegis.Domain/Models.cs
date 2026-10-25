@@ -11,6 +11,7 @@ public sealed record SessionSummary(int SampleCount, double DurationSeconds, dou
 
 public static class Metrics
 {
+    public static bool IsTemperatureReading(Metric metric)=>metric.Unit=="°C"&&!metric.Name.Contains("Distance",StringComparison.OrdinalIgnoreCase)&&!metric.Name.Contains("TjMax",StringComparison.OrdinalIgnoreCase);
     public static double? Latest(Snapshot? s, string id) => s?.Metrics.FirstOrDefault(x => x.Id == id && x.State == MetricState.Available)?.Value;
     public static double? Rate(long current, long previous, double elapsed) => elapsed > 0 && current >= previous ? (current - previous) / elapsed : null;
     public static double? CpuPercent(ulong idleDelta, ulong kernelDelta, ulong userDelta)
@@ -28,7 +29,7 @@ public static class SessionAnalysis
         double? Max(double[] v) => v.Length == 0 ? null : v.Max();
         var cpu = Values("cpu.load"); var ram = Values("ram.load");
         var gpu = session.Samples.SelectMany(s => s.Metrics).Where(m => m.Id.Contains("gpu") && m.Name.Contains("Core", StringComparison.OrdinalIgnoreCase) && m.Unit == "%" && m.State == MetricState.Available && m.Value.HasValue).Select(m => m.Value!.Value).ToArray();
-        var temperatures = session.Samples.SelectMany(s => s.Metrics).Where(m => m.Unit == "°C" && m.State == MetricState.Available && m.Value.HasValue).Select(m => m.Value!.Value).ToArray();
+        var temperatures = session.Samples.SelectMany(s => s.Metrics).Where(m => Metrics.IsTemperatureReading(m) && m.State == MetricState.Available && m.Value.HasValue).Select(m => m.Value!.Value).ToArray();
         var missing = session.Samples.Sum(s => s.Metrics.Count(m => m.State != MetricState.Available));
         var findings = new List<Finding>();
         if(session.Frames?.Stats is null) findings.Add(new("no-frames", "Fluidité non mesurée", "Cette session ne contient aucune capture de présentations exploitable. Les FPS et les saccades ne peuvent pas être évalués à partir des seules moyennes CPU/RAM.", "Sélectionner le processus du jeu dans Sessions et réaliser une capture PresentMon."));

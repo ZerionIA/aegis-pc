@@ -38,8 +38,12 @@ public sealed partial class MainViewModel
     }
     public async Task<bool> PrepareCloseAsync()
     {
+        closingRequested=true;gameTimer.Stop();
+        await recordGate.WaitAsync();
+        try{
         if(recorder.Active)await FinishRecordingAsync();
         return pendingSave is null||await SaveFinalAsync(pendingSave);
+        }finally{recordGate.Release();}
     }
     internal int SmokeMarkerCount=>recorder.Current().Markers.Count;
     internal void SmokeWriteSupport(string path)=>File.WriteAllText(path,SupportReport.Create(VersionText,latest));

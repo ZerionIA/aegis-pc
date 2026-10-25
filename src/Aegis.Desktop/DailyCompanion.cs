@@ -28,9 +28,10 @@ public sealed class DailyCompanion:IDisposable
         menu.Items.Add("Panneau compact",null,(_,_)=>model.WidgetCommand.Execute(null));
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add("Quitter et conserver la session",null,(_,_)=>window.Close());
-        menu.Opening+=(_,_)=>{record.Text=model.RecordLabel;record.Enabled=model.RecordCommand.CanExecute(null);marker.Enabled=model.MarkerCommand.CanExecute(null);};
-        tray.DoubleClick+=(_,_)=>Restore();model.PropertyChanged+=OnChanged;
+        menu.Opening+=(_,_)=>{record.Text=L.Current.Translate(model.RecordLabel);record.Enabled=model.RecordCommand.CanExecute(null);marker.Enabled=model.MarkerCommand.CanExecute(null);};
+        L.Current.Changed+=TranslateMenu;TranslateMenu();tray.DoubleClick+=(_,_)=>Restore();model.PropertyChanged+=OnChanged;
     }
+    private void TranslateMenu(){menu.Items[0].Text=L.Current.Translate("Ouvrir Aegis");marker.Text=L.Current.Translate("Marquer une saccade · Ctrl+Alt+F8");menu.Items[3].Text=L.Current.Translate("Panneau compact");menu.Items[5].Text=L.Current.Translate("Quitter et conserver la session");}
     public bool TrayVisible=>tray.Visible;
     internal void SmokeDispatchMarker(){bool handled=false;Hook(source!.Handle,0x0312,(IntPtr)HotkeyId,IntPtr.Zero,ref handled);if(!handled)throw new InvalidOperationException("Hotkey route failed");}
     public void Attach()
@@ -60,7 +61,7 @@ public sealed class DailyCompanion:IDisposable
     }
     public void Dispose()
     {
-        if(disposed)return;disposed=true;model.PropertyChanged-=OnChanged;
+        if(disposed)return;disposed=true;L.Current.Changed-=TranslateMenu;model.PropertyChanged-=OnChanged;
         if(source is not null){if(registered)UnregisterHotKey(source.Handle,HotkeyId);source.RemoveHook(Hook);}
         tray.Visible=false;tray.Dispose();menu.Dispose();icon.Dispose();
     }
