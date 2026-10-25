@@ -25,7 +25,7 @@ public sealed class L:INotifyPropertyChanged
     {
         string next=code=="en"?"en":"fr";if(next==Language)return;Language=next;
         CultureInfo.CurrentUICulture=CultureInfo.GetCultureInfo(next);CultureInfo.CurrentCulture=CultureInfo.GetCultureInfo(next=="en"?"en-US":"fr-FR");
-        PropertyChanged?.Invoke(this,new("Item[]"));Changed?.Invoke();
+        PropertyChanged?.Invoke(this,new("Item[]"));PropertyChanged?.Invoke(this,new(nameof(Language)));Changed?.Invoke();
     }
     public event Action? Changed;
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -36,8 +36,20 @@ public sealed class TrExtension:MarkupExtension
     public string Key{get;set;}="";
     public override object ProvideValue(IServiceProvider provider)=>new Binding("["+Key+"]"){Source=L.Current,Mode=BindingMode.OneWay}.ProvideValue(provider);
 }
-public sealed class TranslationConverter:IValueConverter
+public sealed class TranslationConverter:IValueConverter,IMultiValueConverter
 {
+    public object Convert(object[] values,Type targetType,object parameter,CultureInfo culture)=>Convert(values[0],targetType,parameter,culture);
+    public object[] ConvertBack(object value,Type[] targetTypes,object parameter,CultureInfo culture)=>throw new NotSupportedException();
     public object Convert(object value,Type targetType,object parameter,CultureInfo culture)=>value is string text?L.Current.Translate(text):value;
     public object ConvertBack(object value,Type targetType,object parameter,CultureInfo culture)=>throw new NotSupportedException();
+}
+public sealed class LocalizedExtension:MarkupExtension
+{
+    public string Path{get;set;}="";
+    public override object ProvideValue(IServiceProvider provider)
+    {
+        var binding=new MultiBinding{Converter=new TranslationConverter(),Mode=BindingMode.OneWay};
+        binding.Bindings.Add(new Binding(Path));binding.Bindings.Add(new Binding(nameof(L.Language)){Source=L.Current});
+        return binding.ProvideValue(provider);
+    }
 }
