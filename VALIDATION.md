@@ -6,6 +6,7 @@ Campagne du 25 octobre 2026 sur Windows x64. Compilation Release sans erreur ni 
 - Scénario intégré réel : icône déclarée visible, masquage/restauration, démarrage en arrière-plan et deuxième processus réactivant la fenêtre existante.
 - Enregistrement avec collecteur réel, marqueur ajouté par la même route de messages que le raccourci, dernier bilan rechargé, recherche et rapport JSON créés. Le test appelle cette route dans l'app ; aucune frappe globale dans un jeu n'est simulée.
 - Valeur du démarrage Windows inchangée avant/après ces essais. L'activation réelle au prochain login Windows n'a pas été testée ; l'option n'a pas été imposée au PC de développement.
+- Refus réel de sauvegarde SQLite provoqué en lecture seule dans une base isolée, puis droits restaurés : la session en attente reste récupérée après changement de sélection. Une nouvelle capture est bloquée tant que la sauvegarde précédente échoue.
 - Captures de la fenêtre inspectées, notamment après correction du nom et du contraste des listes déroulantes.
 - Les versions précédentes ont déjà été testées pour migration, installation/désinstallation et mise à jour via GitHub. Les essais de la release courante sont complétés dans la livraison après publication.
 

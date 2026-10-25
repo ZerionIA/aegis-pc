@@ -158,9 +158,9 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
     private async Task<bool> SaveFinalAsync(Session s)
     {
         await checkpointGate.WaitAsync();
-        try{await store.SaveAsync(s);unsavedSession=false;return true;}
+        try{await store.SaveAsync(s);if(pendingSave?.Id==s.Id)pendingSave=null;return true;}
         catch(Exception e) when(e is Microsoft.Data.Sqlite.SqliteException or IOException or InvalidDataException)
-        {unsavedSession=true;Status="La session n’a pas pu être enregistrée ("+e.Message+"). Elle reste en mémoire : exportez-la en CSV avant de quitter.";return false;}
+        {pendingSave=s;Status="La session n’a pas pu être enregistrée ("+e.Message+"). Elle reste en mémoire : exportez-la en CSV avant de quitter.";return false;}
         finally{checkpointGate.Release();}
     }
     /// <summary>Termine la session : mesures enregistrées d'abord, puis frames (échec toléré), puis bilan.</summary>
@@ -196,6 +196,7 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
         if(recorder.Active)await FinishRecordingAsync();
         else
         {
+            if(pendingSave is not null&&!await SaveFinalAsync(pendingSave))throw new InvalidOperationException("La session précédente attend encore sa sauvegarde. Libérez de l’espace ou corrigez l’accès au dossier avant une nouvelle capture.");
             if(latest is null)throw new InvalidOperationException("Le collecteur ne fournit pas encore de mesures : patientez quelques secondes puis réessayez.");
             updateRequest?.Cancel();
             limitHandled=false;selected=null;

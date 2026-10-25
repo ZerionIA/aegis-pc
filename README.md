@@ -50,7 +50,7 @@ L'assistant et ses dépendances ont été retirés. Les modèles téléchargés 
 
 ## Limites
 
-Capteurs et ETW dépendent du matériel, des pilotes et des droits. Aucun groupe Windows ni anti-cheat n'est modifié. Capture de jeu réelle sous anti-cheat, microphone physique et configurations multi-GPU restent à tester. Une fixture CSV ne prouve pas une capture de jeu réelle.
+Capteurs et ETW dépendent du matériel, des pilotes et des droits. Aucun groupe Windows ni anti-cheat n'est modifié. Capture de jeu réelle sous anti-cheat et configurations multi-GPU restent à tester. Une fixture CSV ne prouve pas une capture de jeu réelle.
 
 Pas d'overclocking, ventilateurs, stress test, surveillance distante ni synchronisation cloud. Une base saine en lecture seule est préservée et l'erreur remontée. Seules les erreurs de corruption ou de format SQLite déclenchent une quarantaine conservant les fichiers.
 
@@ -65,7 +65,7 @@ Le packaging utilise un nouveau dossier sous artifacts/, publie Desktop et Colle
 
 ## Architecture
 
-Domain : mesures/statistiques/seuils. Application : contrats/sessions. Infrastructure : SQLite/exports/PresentMon/Ollama. Collector : processus séparé et pipe réservé à l'utilisateur. Desktop : WPF/MVVM/panneau/thèmes. Updater : installation après fermeture. Tests : calculs, formats, persistance et régressions.
+Domain : mesures/statistiques/seuils. Application : contrats/sessions. Infrastructure : SQLite/exports/PresentMon/mises à jour. Collector : processus séparé et pipe réservé à l'utilisateur. Desktop : WPF/MVVM/panneau/thèmes. Updater : installation après fermeture. Tests : calculs, formats, persistance et régressions.
 
 [Kit de promotion](marketing/TEXTES.md) · [Contribuer](CONTRIBUTING.md) · [Sécurité](SECURITY.md) · [Validation](VALIDATION.md) · [Comparatif](docs/COMPARATIF.md)
 

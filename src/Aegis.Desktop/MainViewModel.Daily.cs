@@ -9,7 +9,7 @@ public sealed partial class MainViewModel
 {
     private bool minimizeToTray=true,hotkeyEnabled=true,startWithWindows;
     private string hotkeyStatus="Initialisation du raccourci…",sessionQuery="";
-    private bool unsavedSession;
+    private Aegis.Domain.Session? pendingSave;
     public bool MinimizeToTray{get=>minimizeToTray;set{minimizeToTray=value;Changed();}}
     public bool HotkeyEnabled{get=>hotkeyEnabled;set{hotkeyEnabled=value;Changed();}}
     public bool StartWithWindows{get=>startWithWindows;set{startWithWindows=value;Changed();}}
@@ -39,8 +39,23 @@ public sealed partial class MainViewModel
     public async Task<bool> PrepareCloseAsync()
     {
         if(recorder.Active)await FinishRecordingAsync();
-        return !unsavedSession||selected is not null&&await SaveFinalAsync(selected);
+        return pendingSave is null||await SaveFinalAsync(pendingSave);
     }
     internal int SmokeMarkerCount=>recorder.Current().Markers.Count;
     internal void SmokeWriteSupport(string path)=>File.WriteAllText(path,SupportReport.Create(VersionText,latest));
+    internal async Task SmokeSaveRecoveryAsync()
+    {
+        var previous=selected??throw new InvalidOperationException("No session for recovery check");
+        var recovery=previous with{Id=Guid.NewGuid()};
+        var file=Path.Combine(data,"sessions.db");var attributes=File.GetAttributes(file);
+        try
+        {
+            File.SetAttributes(file,attributes|FileAttributes.ReadOnly);
+            if(await SaveFinalAsync(recovery))throw new InvalidOperationException("Readonly save unexpectedly succeeded");
+        }
+        finally{File.SetAttributes(file,attributes);}
+        selected=null;
+        if(!await PrepareCloseAsync()||await store.LoadAsync(recovery.Id) is null)throw new InvalidOperationException("Pending session not recovered after selection changed");
+        selected=previous;
+    }
 }
