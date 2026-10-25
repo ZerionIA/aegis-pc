@@ -8,7 +8,7 @@ Campagne du 25 octobre 2026 sur Windows x64. Compilation Release sans erreur ni 
 - Valeur du démarrage Windows inchangée avant/après ces essais. L'activation réelle au prochain login Windows n'a pas été testée ; l'option n'a pas été imposée au PC de développement.
 - Refus réel de sauvegarde SQLite provoqué en lecture seule dans une base isolée, puis droits restaurés : la session en attente reste récupérée après changement de sélection. Une nouvelle capture est bloquée tant que la sauvegarde précédente échoue.
 - Captures de la fenêtre inspectées, notamment après correction du nom et du contraste des listes déroulantes.
-- Les versions précédentes ont déjà été testées pour migration, installation/désinstallation et mise à jour via GitHub. Les essais de la release courante sont complétés dans la livraison après publication.
+- CI et packaging GitHub réussis. Paquet officiel téléchargé par le client de l’app et SHA-256 vérifié. Updater réel 0.3 → 0.4 : fermeture normale, installation retour 0, version installée et relancée vérifiée. Contenu logique de la base inchangé (base vide dans cet essai) ; migration de sessions peuplées vérifiée lors de la campagne précédente. Refus correct de l’installateur si une autre instance conserve le verrou. Site public HTTP 200 et liens de la 0.4 contrôlés.
 
 ## Limites
 

@@ -67,7 +67,7 @@ Le packaging utilise un nouveau dossier sous artifacts/, publie Desktop et Colle
 
 Domain : mesures/statistiques/seuils. Application : contrats/sessions. Infrastructure : SQLite/exports/PresentMon/mises à jour. Collector : processus séparé et pipe réservé à l'utilisateur. Desktop : WPF/MVVM/panneau/thèmes. Updater : installation après fermeture. Tests : calculs, formats, persistance et régressions.
 
-[Kit de promotion](marketing/TEXTES.md) · [Contribuer](CONTRIBUTING.md) · [Sécurité](SECURITY.md) · [Validation](VALIDATION.md) · [Comparatif](docs/COMPARATIF.md)
+[Prise en main](docs/PRISE-EN-MAIN.md) · [Kit de promotion](marketing/TEXTES.md) · [Contribuer](CONTRIBUTING.md) · [Sécurité](SECURITY.md) · [Validation](VALIDATION.md) · [Comparatif](docs/COMPARATIF.md)
 
 ## Licence
 
