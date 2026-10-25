@@ -11,3 +11,7 @@ Campagne Windows x64 du 25 octobre 2026.
 ## Limites
 
 Bêta non signée Authenticode. HUD externe destiné aux modes fenêtré/sans bordure ; le plein écran exclusif peut le masquer. Pas de compatibilité anti-cheat universelle ou certification Riot revendiquée. Aucune partie LoL complète, clic physique traversant en partie ou stabilité longue durée ne sont certifiés par cette campagne. Pas de FPS en direct dans le HUD : PresentMon produit des statistiques après capture selon les droits ETW et le jeu. Les capteurs matériels indisponibles restent absents. Les noms matériels, contenus utilisateur et diagnostics externes gardent leur langue d’origine ; l’interface principale et les observations courantes ont leurs packs français/anglais. L’assistant IA reste retiré.
+
+## Diffusion vérifiée
+
+CI et packaging GitHub réussis. Installateur officiel téléchargé et SHA-256 vérifié, puis mise à jour 0.4 → 0.5 installée avec fermeture normale et relance de l’app. Version installée et réactivité du processus contrôlées sans nouvelle erreur de journal. Site et guide publics en HTTP 200 après déploiement de la version 5.
