@@ -4,7 +4,9 @@
 
 **0.4.0-beta.1 · Windows 10/11 x64 · Bêta publique non signée.**
 
-[Télécharger](https://github.com/ZerionIA/aegis-pc/releases) · [Aide et problèmes](https://github.com/ZerionIA/aegis-pc/issues) · [Confidentialité](PRIVACY.md)
+[**Télécharger l’installateur Windows (.exe)**](https://github.com/ZerionIA/aegis-pc/releases/download/v0.4.0-beta.1/Aegis-0.4.0-beta.1-Setup.exe) · [Guide d’installation et première session](https://aegis-pc-monitor.raptorafc.chatgpt.site/guide/) · [Site officiel](https://aegis-pc-monitor.raptorafc.chatgpt.site/)
+
+Installateur de **77,3 Mo**, runtime inclus. [Notes de version et SHA-256](https://github.com/ZerionIA/aegis-pc/releases/tag/v0.4.0-beta.1) · [Aide et problèmes](https://github.com/ZerionIA/aegis-pc/issues) · [Confidentialité](PRIVACY.md)
 
 ## En trois gestes
 
