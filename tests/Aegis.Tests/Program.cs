@@ -73,4 +73,5 @@ using(var c=new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={readOnlyDb
 await UpdateTests.RunAsync(Check,root);
 await DailyTests.RunAsync(Check,root);
 GameTests.Run(Check);
+await HardwareTests.RunAsync(Check);
 Console.WriteLine($"{passed} checks passed.");

@@ -167,5 +167,20 @@
   "t0223e476eead": "Search sensors or devices",
   "tfd77a88d2f27": "Include unavailable sensors",
   "hudTopCenter": "Top center",
-  "hudBottomCenter": "Bottom center"
+  "hudBottomCenter": "Bottom center",
+  "te7925239e745": "CPU sensors",
+  "t6995f3e29097": "Full CPU sensors",
+  "tcc32e816a9c0": "Full CPU sensor access (Windows confirmation)",
+  "t8ae961031bd4": "The officially signed PawnIO driver is included. Full access requests Windows confirmation when starting the collector; the interface remains unprivileged.",
+  "t0f8fd8dcbc4b": "Install prerequisite and enable sensors",
+  "tb101439dce46": "Apply and restart sensors",
+  "tc3719f2747c5": "Stop the session before configuring sensors. If you decline Windows confirmation, basic mode remains available. No security setting is disabled.",
+  "t5bade3964db7": "CPU temperature received from collector.",
+  "t23bd1551ed94": "PawnIO is missing: the official installer is included with Aegis.",
+  "t2a533de9bafd": "PawnIO installed. Full CPU sensors require Windows administrator confirmation.",
+  "td06c6325d3ea": "Prerequisite installation cancelled. Basic mode remains available.",
+  "t41ac947f0e1a": "Collector restarted. Full access requests Windows confirmation; declining keeps basic mode.",
+  "t81646c6a6150": "CPU temperature: administrator access required. Enable full sensors in Settings → CPU sensors.",
+  "tedb17325e39f": "CPU temperature: PawnIO prerequisite missing. Open Settings → CPU sensors to configure it.",
+  "t03fa9974e83e": "CPU temperature is not exposed by this hardware despite driver access."
 }

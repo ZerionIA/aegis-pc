@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Pipes;
 using System.Text.Json;
 using Aegis.Domain;
+using Aegis.Infrastructure;
 namespace Aegis.Desktop;
 /// <summary>Lance et supervise le processus collecteur. Redémarrable après une panne.</summary>
 public sealed class CollectorClient : IAsyncDisposable
@@ -11,9 +12,10 @@ public sealed class CollectorClient : IAsyncDisposable
     private NamedPipeServerStream? pipe;
     private CancellationTokenSource? stop;
     private Task? loop;
+    private bool elevated;
     public event Action<Snapshot>? Sample;
     public event Action<string>? Fault;
-    public async Task StartAsync()
+    public async Task StartAsync(bool fullSensors=false)
     {
         await StopCurrentAsync();
         string exe=Path.Combine(AppContext.BaseDirectory,"collector","Aegis.Collector.exe");
@@ -22,8 +24,15 @@ public sealed class CollectorClient : IAsyncDisposable
         var cancellation=new CancellationTokenSource();stop=cancellation;
         pipe=new NamedPipeServerStream(name,PipeDirection.In,1,PipeTransmissionMode.Byte,PipeOptions.Asynchronous|PipeOptions.CurrentUserOnly);
         var info=new ProcessStartInfo(exe) { UseShellExecute=false,CreateNoWindow=true,WindowStyle=ProcessWindowStyle.Hidden };
+        elevated=HardwareAccess.ShouldElevate(fullSensors,HardwareAccess.IsInstalled,HardwareAccess.CanReadDriver);
+        if(elevated){info.UseShellExecute=true;info.Verb="runas";}
         info.ArgumentList.Add("--pipe"); info.ArgumentList.Add(name);
-        try{process=Process.Start(info)??throw new IOException("Le collecteur n'a pas pu démarrer.");}
+        try
+        {
+            try{process=Process.Start(info)??throw new IOException("Le collecteur n'a pas pu démarrer.");}
+            catch(System.ComponentModel.Win32Exception e)when(e.NativeErrorCode==1223)
+            {elevated=false;info.UseShellExecute=false;info.Verb="";process=Process.Start(info)??throw new IOException("Le collecteur basique n'a pas pu démarrer.");}
+        }
         catch{pipe.Dispose();pipe=null;throw;}
         loop=ReadAsync(pipe,cancellation.Token);
     }
@@ -51,7 +60,18 @@ public sealed class CollectorClient : IAsyncDisposable
         if(cancellation is not null)await cancellation.CancelAsync();
         try{pipe?.Dispose();}catch(IOException){}
         pipe=null;
-        try{if(process is not null&&!process.HasExited){process.Kill(entireProcessTree:true);await process.WaitForExitAsync();}}
+        try
+        {
+            if(process is not null&&!process.HasExited)
+            {
+                try{await process.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(6));}
+                catch(TimeoutException)
+                {
+                    if(!elevated){process.Kill(entireProcessTree:true);await process.WaitForExitAsync();}
+                    else App.Log("Le collecteur termine sa lecture après fermeture du canal.");
+                }
+            }
+        }
         catch(Exception e) when(e is InvalidOperationException or System.ComponentModel.Win32Exception){}
         process?.Dispose();process=null;
         if(loop is not null)try{await loop;}catch(Exception e) when(e is ObjectDisposedException or OperationCanceledException){}

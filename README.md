@@ -2,18 +2,26 @@
 
 **Votre PC, en clair.** Monitoring Windows gratuit et open source. Sans compte, publicité, paiement ni télémétrie applicative.
 
-**0.5.1-beta.1 · Windows 10/11 x64 · Bêta publique non signée.**
+**0.6.0-beta.1 · Windows 10/11 x64 · Bêta publique non signée.**
 
-[**Télécharger l’installateur Windows (.exe)**](https://github.com/ZerionIA/aegis-pc/releases/download/v0.5.1-beta.1/Aegis-0.5.1-beta.1-Setup.exe) · [Guide d’installation et première session](https://aegis-pc-monitor.raptorafc.chatgpt.site/guide/) · [Site officiel](https://aegis-pc-monitor.raptorafc.chatgpt.site/)
+[**Télécharger l’installateur Windows (.exe)**](https://github.com/ZerionIA/aegis-pc/releases/download/v0.6.0-beta.1/Aegis-0.6.0-beta.1-Setup.exe) · [Guide d’installation et première session](https://aegis-pc-monitor.raptorafc.chatgpt.site/guide/) · [Site officiel](https://aegis-pc-monitor.raptorafc.chatgpt.site/)
 
-Installateur Windows, runtime inclus. [Notes de version et SHA-256](https://github.com/ZerionIA/aegis-pc/releases/tag/v0.5.1-beta.1) · [Aide et problèmes](https://github.com/ZerionIA/aegis-pc/issues) · [Confidentialité](PRIVACY.md)
+Installateur Windows, runtime et prérequis CPU officiel signés inclus. [Notes de version et SHA-256](https://github.com/ZerionIA/aegis-pc/releases/tag/v0.6.0-beta.1) · [Aide et problèmes](https://github.com/ZerionIA/aegis-pc/issues) · [Confidentialité](PRIVACY.md)
+
+## Installation complète, sans téléchargement manuel
+
+Le paquet contient .NET, PresentMon et l’installateur officiel signé de **PawnIO 2.2.0**. Pendant l’installation, l’option « Capteurs CPU complets » est proposée et explique la confirmation administrateur. Si PawnIO est déjà compatible, il est réutilisé ; une version plus récente n’est pas remplacée par une ancienne. Aegis peut être lancé depuis la fin de l’assistant.
+
+La lecture des températures CPU par ce pilote exige également une confirmation Windows au lancement du **collecteur**, sans élever l’interface. Refuser conserve un mode basique avec un diagnostic explicite. Aucun réglage de sécurité n’est désactivé. Les mises à jour silencieuses n’ajoutent pas de pilote en secret : les utilisateurs existants peuvent terminer cette configuration depuis **Réglages → Capteurs CPU**.
+
+Les sources et licences de PawnIO sont jointes aux notices. Ce pilote peut être partagé par d’autres outils ; désinstaller Aegis ne le retire pas. Les capteurs disponibles dépendent toujours du matériel et des droits ; aucune garantie universelle n’est annoncée.
 
 ## Pensé pour jouer
 
 - **HUD discret en jeu** : sans bordure, en barre horizontale, centrée en haut par défaut, CPU/GPU/RAM et températures CPU/GPU disponibles. Clics traversants, sans prise de focus. Position dans les quatre coins ou au centre, taille et opacité réglables.
 - **Sessions automatiques** : détection locale de jeux reconnus, dont le processus de partie LoL, et noms d’exécutables personnalisables. Deux observations avant démarrage ; environ 12 secondes d’absence avant arrêt. Un arrêt manuel bloque la reprise jusqu’au prochain lancement.
 - **Capteurs classés** par CPU, GPU, RAM, réseau, stockage et système, avec recherche et filtre. Valeurs disponibles d’abord, puis tri température/charge/puissance/fréquence. Groupes repliables sans réinitialisation à chaque mesure.
-- **Réglages par onglets** : Jeux, Affichage en jeu, Général, Apparence et langues, Alertes, Mises à jour, Avancé. Packs d’interface français et anglais intégrés, changement immédiat. Les noms de capteurs, de sessions et les détails techniques externes restent natifs.
+- **Réglages par onglets** : Jeux, Affichage en jeu, Général, Apparence et langues, Alertes, Mises à jour, Avancé, Capteurs CPU. Packs d’interface français et anglais intégrés, changement immédiat. Les noms de capteurs, de sessions et les détails techniques externes restent natifs.
 
 Pour LoL, utiliser **Sans bordure** ou **Fenêtré**. Le HUD externe peut être masqué en plein écran exclusif ; aucune garantie universelle anti-cheat. Les FPS ne sont pas affichés en direct : les statistiques de présentation sont calculées après capture PresentMon, activable séparément.
 
@@ -45,7 +53,7 @@ Le rapport support est créé localement après choix d'un fichier ; il contient
 
 ## Installation
 
-Télécharger Aegis-0.5.1-beta.1-Setup.exe depuis une GitHub Release. Le runtime .NET est inclus. Installation par utilisateur sans élévation automatique. Fermer Aegis avant mise à jour ou désinstallation. Les données restent dans %LOCALAPPDATA%/AegisNext après désinstallation.
+Télécharger Aegis-0.6.0-beta.1-Setup.exe depuis une GitHub Release. Le runtime .NET est inclus. Installation par utilisateur sans élévation automatique. Fermer Aegis avant mise à jour ou désinstallation. Les données restent dans %LOCALAPPDATA%/AegisNext après désinstallation.
 
 Bêta non signée : Windows peut afficher un avertissement. Vérifier la provenance et SHA256SUMS.txt. Aegis ne demande pas de désactiver une protection Windows. Le panneau de bureau peut être masqué par le plein écran exclusif ; ce n'est pas un overlay injecté.
 

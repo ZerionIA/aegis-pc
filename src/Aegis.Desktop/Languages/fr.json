@@ -167,5 +167,20 @@
   "t0223e476eead": "Rechercher un capteur ou un appareil",
   "tfd77a88d2f27": "Inclure les capteurs indisponibles",
   "hudTopCenter": "En haut au centre",
-  "hudBottomCenter": "En bas au centre"
+  "hudBottomCenter": "En bas au centre",
+  "te7925239e745": "Capteurs CPU",
+  "t6995f3e29097": "Capteurs CPU complets",
+  "tcc32e816a9c0": "Lecture complète des capteurs CPU (confirmation Windows)",
+  "t8ae961031bd4": "Le pilote officiel signé PawnIO est inclus dans le paquet. L’accès complet demande une confirmation Windows au lancement du collecteur ; l’interface reste sans privilèges.",
+  "t0f8fd8dcbc4b": "Installer le prérequis et activer les capteurs",
+  "tb101439dce46": "Appliquer et relancer les capteurs",
+  "tc3719f2747c5": "Terminez la session avant de configurer les capteurs. Si vous refusez la confirmation Windows, le mode basique reste utilisable. Aucun réglage de sécurité n’est désactivé.",
+  "t5bade3964db7": "Température CPU reçue du collecteur.",
+  "t23bd1551ed94": "Prérequis PawnIO absent : l’installateur officiel est inclus dans Aegis.",
+  "t2a533de9bafd": "PawnIO installé. Les capteurs CPU complets nécessitent une confirmation administrateur Windows.",
+  "td06c6325d3ea": "Installation du prérequis annulée. Le mode basique reste disponible.",
+  "t41ac947f0e1a": "Collecteur relancé. La lecture complète demande une confirmation Windows ; son refus conserve le mode basique.",
+  "t81646c6a6150": "Température CPU : accès administrateur requis. Activez les capteurs complets dans Réglages → Capteurs CPU.",
+  "tedb17325e39f": "Température CPU : prérequis PawnIO manquant. Ouvrez Réglages → Capteurs CPU pour le configurer.",
+  "t03fa9974e83e": "Température CPU non exposée par ce matériel malgré l’accès au pilote."
 }

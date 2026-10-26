@@ -58,7 +58,7 @@
       "aegis.application": {
         "type": "Project",
         "dependencies": {
-          "Aegis.Domain": "[0.2.0-beta.2, )"
+          "Aegis.Domain": "[0.6.0-beta.1, )"
         }
       },
       "aegis.domain": {
@@ -67,7 +67,7 @@
       "aegis.infrastructure": {
         "type": "Project",
         "dependencies": {
-          "Aegis.Application": "[0.2.0-beta.2, )",
+          "Aegis.Application": "[0.6.0-beta.1, )",
           "Microsoft.Data.Sqlite": "[10.0.0, )",
           "SQLitePCLRaw.bundle_e_sqlite3": "[3.0.5, )"
         }

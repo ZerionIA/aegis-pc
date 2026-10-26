@@ -1,16 +1,24 @@
 using LibreHardwareMonitor.Hardware;
 using Aegis.Domain;
+using Aegis.Infrastructure;
 namespace Aegis.Collector;
 internal sealed class HardwareProvider : IDisposable
 {
     private readonly Computer computer=new() { IsCpuEnabled=true, IsGpuEnabled=true, IsMotherboardEnabled=false, IsStorageEnabled=false, IsControllerEnabled=false };
     public string? Warning { get; private set; }
+    private readonly bool driverInstalled=HardwareAccess.IsInstalled,driverReadable=HardwareAccess.CanReadDriver;
     public HardwareProvider() { try { computer.Open(); } catch(Exception e) { Warning="Capteurs matériels partiels : "+e.Message; } }
     public List<Metric> Read()
     {
         var result=new List<Metric>();
         foreach(var h in computer.Hardware) ReadHardware(h,result);
-        if(!result.Any(m=>m.Unit=="°C")) result.Add(new("cpu.temperature","CPU","Température non exposée","°C",null,"LibreHardwareMonitor",MetricState.Missing));
+        if(!result.Any(m=>m.Id.Contains("cpu",StringComparison.OrdinalIgnoreCase)&&Metrics.IsTemperatureReading(m)&&m.Value.HasValue))
+        {
+            Warning=!driverInstalled?"Température CPU : prérequis PawnIO manquant. Ouvrez Réglages → Capteurs CPU pour le configurer."
+                :!driverReadable?"Température CPU : accès administrateur requis. Activez les capteurs complets dans Réglages → Capteurs CPU."
+                :"Température CPU non exposée par ce matériel malgré l’accès au pilote.";
+            result.Add(new("cpu.temperature","CPU","Température CPU indisponible","°C",null,"LibreHardwareMonitor",MetricState.Missing));
+        }
         return result;
     }
     private void ReadHardware(IHardware h,List<Metric> result)

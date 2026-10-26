@@ -1,1 +1,1 @@
-<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType></PropertyGroup><ItemGroup><ProjectReference Include="../Aegis.Domain/Aegis.Domain.csproj"/><PackageReference Include="LibreHardwareMonitorLib" Version="0.9.6"/></ItemGroup></Project>
+<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType></PropertyGroup><ItemGroup><ProjectReference Include="../Aegis.Infrastructure/Aegis.Infrastructure.csproj"/><PackageReference Include="LibreHardwareMonitorLib" Version="0.9.6"/></ItemGroup></Project>

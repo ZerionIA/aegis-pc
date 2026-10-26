@@ -14,8 +14,12 @@ SetCompressor zlib
 !define MUI_ICON "..\src\Aegis.Desktop\Assets\aegis.ico"
 !define MUI_UNICON "..\src\Aegis.Desktop\Assets\aegis.ico"
 !define MUI_ABORTWARNING
+!define MUI_COMPONENTSPAGE_TEXT_TOP "Aegis contient son runtime. Les capteurs CPU complets utilisent le pilote officiel signé PawnIO et demandent une confirmation administrateur Windows. Décochez cette option pour le mode basique."
 !insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_INSTFILES
+!define MUI_FINISHPAGE_RUN "$INSTDIR\Aegis.exe"
+!define MUI_FINISHPAGE_RUN_TEXT "Lancer Aegis"
 !insertmacro MUI_PAGE_FINISH
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
@@ -55,7 +59,8 @@ Function un.onInit
  ready:
 FunctionEnd
 
-Section "Aegis"
+Section "Aegis (application et runtime)" SecAegis
+ SectionIn RO
  SetOutPath "$INSTDIR"
  Delete "$INSTDIR\NAudio*.dll"
  Delete "$INSTDIR\System.Speech.dll"
@@ -71,7 +76,33 @@ Section "Aegis"
  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Aegis" "DisplayVersion" "${APP_VERSION}"
  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Aegis" "Publisher" "Aegis contributors"
  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Aegis" "DisplayIcon" "$INSTDIR\Aegis.exe"
+ ExecWait '"$INSTDIR\Aegis.exe" --configure-basic-if-new' $0
+ StrCmp $0 0 initial_config_done
+ IfSilent +2
+ MessageBox MB_ICONSTOP "Impossible d’enregistrer la configuration utilisateur. Vérifiez les droits et l’espace disque, puis relancez l’installation."
+ SetErrorLevel 3
+ Abort
+ initial_config_done:
 SectionEnd
+
+Section "Capteurs CPU complets (pilote PawnIO)" SecHardware
+ ; A silent update never silently adds a system driver. Setup remains available in the app.
+ IfSilent hardware_done
+ DetailPrint "Configuration des capteurs CPU : pilote signé, puis confirmation Windows pour la lecture."
+ ExecWait '"$INSTDIR\Aegis.exe" --install-hardware' $0
+ StrCmp $0 0 hardware_done
+ StrCmp $0 3010 hardware_reboot
+ MessageBox MB_ICONINFORMATION "Le prérequis matériel n’a pas été installé ou a été refusé. Aegis reste utilisable en mode basique. Vous pouvez reprendre la configuration depuis Réglages → Capteurs CPU."
+ Goto hardware_done
+ hardware_reboot:
+ MessageBox MB_ICONINFORMATION "PawnIO est installé. Windows demande un redémarrage du PC avant la lecture complète des capteurs CPU."
+ hardware_done:
+SectionEnd
+
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+ !insertmacro MUI_DESCRIPTION_TEXT ${SecAegis} "Monitoring, HUD, sessions, exports et runtime .NET inclus."
+ !insertmacro MUI_DESCRIPTION_TEXT ${SecHardware} "Version officielle signée de PawnIO incluse. Autorisation administrateur à l’installation du pilote et au lancement du collecteur complet. Sans cette option, certaines mesures CPU restent indisponibles."
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 Section "Uninstall"
  ClearErrors

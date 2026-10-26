@@ -1,17 +1,16 @@
-# Validation — 0.5.0-beta.1
+# Validation — 0.6.0-beta.1
 
-Campagne Windows x64 du 25 octobre 2026.
+Campagne Windows x64 du 26 octobre 2026.
 
-- 74 contrôles réussis : 69 de base et cinq avec le collecteur réel. Quinze régressions de jeu couvrent les lanceurs, correspondances exactes, temporisation, arrêt manuel, relancement et réutilisation de PID.
-- Scénario réel avec un processus factice isolé : détection, début de session, HUD affiché, fin du processus, arrêt automatique et bilan sauvegardé. Les styles Windows sans activation et transparence aux clics sont inspectés sur le handle du HUD. Ce n’est pas un test de frappe ou de clic physique dans LoL.
-- Une vraie instance de League of Legends a été reconnue pendant les essais ; le scénario reproductible a ensuite été isolé sur le processus factice. Aucun processus de jeu réel n’a été fermé ou modifié.
-- Captures inspectées : HUD, réglages par onglets en anglais et capteurs groupés. Recherche capteur, stabilité de l’objet de groupe entre deux mesures, complétude des packs et sérialisation des préférences vérifiées par le scénario intégré.
-- Les tests précédents de sauvegarde refusée, quarantaine SQLite, mises à jour et conservation des données restent présents. Démarrage Windows jamais activé par ces essais.
+- 83 contrôles réussis : 78 de base, cinq avec collecteur réel. Nouveaux cas : prérequis absent/ancien/compatible/plus récent, aucun droit demandé en mode basique, élévation uniquement en mode complet lorsqu’il manque l’accès, longueur et SHA-256 du payload.
+- Installation de PawnIO 2.2.0 autorisée par l’utilisateur : signature Authenticode valide, empreinte officielle vérifiée, service installé et actif.
+- Cause reproduite : ouverture du pilote refusée (code Windows 5) en contexte non administrateur. Collecteur autorisé : CPU Package et températures des cœurs mesurés, environ 52–53 °C lors de l’essai.
+- HUD réel inspecté avec température CPU 52 °C et température GPU 58 °C. Onglet Capteurs CPU inspecté avec lecture confirmée. L’interface elle-même reste non élevée ; seul le collecteur demande l’autorisation.
+- Configurateur sans fenêtre : sortie 0, passage basique puis complet, thème et choix de mises à jour existants conservés. Pas de second téléchargement ni de réinstallation d’un pilote compatible.
+- Sources exactes PawnIO et PawnPP, licence et provenance jointes ; payload officiel téléchargé avec empreinte et signature vérifiées pendant le packaging.
 
 ## Limites
 
-Bêta non signée Authenticode. HUD externe destiné aux modes fenêtré/sans bordure ; le plein écran exclusif peut le masquer. Pas de compatibilité anti-cheat universelle ou certification Riot revendiquée. Aucune partie LoL complète, clic physique traversant en partie ou stabilité longue durée ne sont certifiés par cette campagne. Pas de FPS en direct dans le HUD : PresentMon produit des statistiques après capture selon les droits ETW et le jeu. Les capteurs matériels indisponibles restent absents. Les noms matériels, contenus utilisateur et diagnostics externes gardent leur langue d’origine ; l’interface principale et les observations courantes ont leurs packs français/anglais. L’assistant IA reste retiré.
+Les confirmations UAC doivent être acceptées par l’utilisateur. Un refus garde l’app utilisable avec des métriques limitées ; il ne produit pas de fausse température. Aucun redémarrage forcé, changement de permission du pilote ou désactivation de protection. Le système peut demander un redémarrage après installation du pilote. Le test de refus de privilèges couvre la politique et le mode basique ; aucun clic UAC n’est automatisé. Le parcours a été exercé sur ce PC, pas sur une matrice de machines virtuelles fraîchement installées.
 
-## Diffusion vérifiée
-
-CI et packaging GitHub réussis. Installateur officiel téléchargé et SHA-256 vérifié, puis mise à jour 0.4 → 0.5 installée avec fermeture normale et relance de l’app. Version installée et réactivité du processus contrôlées sans nouvelle erreur de journal. Site et guide publics en HTTP 200 après déploiement de la version 5.
+Bêta Aegis non signée Authenticode ; le prérequis PawnIO conserve sa signature officielle. Les limites de compatibilité matérielle, de stabilité longue durée, de plein écran exclusif et d’anti-cheat restent applicables. Pas de FPS en direct.

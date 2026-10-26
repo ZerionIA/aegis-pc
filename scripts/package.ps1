@@ -29,6 +29,12 @@ try{
  $pm=Join-Path $tools 'PresentMon.exe'
  Invoke-WebRequest 'https://github.com/GameTechDev/PresentMon/releases/download/v2.6.0/PresentMon-2.6.0-x64.exe' -OutFile $pm
  if((Get-FileHash $pm -Algorithm SHA256).Hash -ne 'B2A706BC6AD475749E3B7E3409263AA1E6906D45BDCF993F6DBC0F660188F1AF'){throw 'PresentMon checksum mismatch'}
+ $prerequisites=Join-Path $target 'prerequisites';New-Item -ItemType Directory -Force $prerequisites | Out-Null
+ $pawn=Join-Path $prerequisites 'PawnIO_setup.exe'
+ Invoke-WebRequest 'https://github.com/namazso/PawnIO.Setup/releases/download/2.2.0/PawnIO_setup.exe' -OutFile $pawn
+ if((Get-FileHash $pawn -Algorithm SHA256).Hash -ne '1F519A22E47187F70A1379A48CA604981C4FCF694F4E65B734AAA74A9FBA3032'){throw 'PawnIO checksum mismatch'}
+ $signature=Get-AuthenticodeSignature $pawn
+ if($signature.Status -ne 'Valid' -or $signature.SignerCertificate.Subject -notmatch 'CN=namazso.eu'){throw 'PawnIO official signature invalid'}
  & $Makensis "/DPACKAGE_DIR=$target" "/DAPP_VERSION=$releaseVersion" (Join-Path $root 'installer/aegis.nsi')
  if($LASTEXITCODE -ne 0){throw 'Installer failed'}
  $setup=Join-Path (Join-Path $root 'artifacts') $setupName

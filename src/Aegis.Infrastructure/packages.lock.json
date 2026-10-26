@@ -60,7 +60,7 @@
       "aegis.application": {
         "type": "Project",
         "dependencies": {
-          "Aegis.Domain": "[1.0.0, )"
+          "Aegis.Domain": "[0.6.0-beta.1, )"
         }
       },
       "aegis.domain": {

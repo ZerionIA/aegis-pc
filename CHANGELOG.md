@@ -1,5 +1,14 @@
 # Historique
 
+## 0.6.0-beta.1 — 26 octobre 2026
+
+- PawnIO 2.2.0 officiel signé inclus, vérifié au packaging et à l’exécution par empreinte figée. Sources et licences jointes.
+- Parcours d’installation avec option capteurs CPU complets, demande Windows explicite, réutilisation des installations compatibles et lancement proposé en fin d’assistant.
+- Collecteur complet séparé avec autorisation administrateur ; interface non élevée. Refus de l’autorisation : collecteur basique avec diagnostic.
+- Onglet Capteurs CPU pour configurer, appliquer ou relancer les lectures. Arrêt propre du collecteur par fermeture de canal, sans forcer le processus élevé.
+- Aucun pilote ajouté silencieusement par les mises à jour ; aucun changement des protections Windows.
+
+
 ## 0.5.1-beta.1 — 26 octobre 2026
 
 - HUD en barre horizontale fine, avec mesures et état sur une ligne.
