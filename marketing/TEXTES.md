@@ -8,18 +8,18 @@ Préparé le 25 octobre 2026. Textes à publier après vérification de la dispo
 - Outils du studio : accès depuis le menu Tools du site
 - X : https://x.com/ZerioniaHQ
 - GitHub : https://github.com/ZerionIA
-- Aegis : https://aegis-pc-monitor.raptorafc.chatgpt.site
+- Aegis : https://zerionia.com/apps/aegis
 - Contact public fourni : contact@zerionia.com (contact public confirmé)
 
 ## X — quotidien Aegis (FR)
 
 Aegis devient plus pratique : icône près de l’horloge, Ctrl+Alt+F8 pour marquer une saccade, recherche de sessions et rapport support local. Gratuit, sans IA, sans compte. Windows x64 · bêta.
-https://aegis-pc-monitor.raptorafc.chatgpt.site
+https://zerionia.com/apps/aegis
 
 ## X — annonce Aegis (FR)
 
 Aegis se recentre sur l’essentiel : monitoring PC gratuit, sessions, alertes et panneau compact. Nouvelle interface, 3 thèmes, aucun assistant IA. Windows x64 · bêta open source.
-→ https://aegis-pc-monitor.raptorafc.chatgpt.site
+→ https://zerionia.com/apps/aegis
 @ZerioniaHQ
 
 ## X — studio et autres outils (FR)
@@ -31,7 +31,7 @@ https://github.com/ZerionIA
 ## X — annonce Aegis (EN)
 
 Aegis focuses on the essentials: free PC monitoring, sessions, alerts and a compact sensor panel. Three themes. No AI assistant. Windows x64, open-source beta.
-https://aegis-pc-monitor.raptorafc.chatgpt.site
+https://zerionia.com/apps/aegis
 Follow @ZerioniaHQ for updates.
 
 ## Encart Aegis à intégrer sur les autres sites du studio
@@ -39,7 +39,7 @@ Follow @ZerioniaHQ for updates.
 Titre : Votre PC, en clair.
 Texte : Découvrez Aegis, le monitoring Windows gratuit de Zerionia. Capteurs, sessions et alertes dans une interface sans assistant IA.
 Bouton : Découvrir Aegis
-Lien : https://aegis-pc-monitor.raptorafc.chatgpt.site
+Lien : https://zerionia.com/apps/aegis
 Mention : Bêta Windows x64, non signée. Compatibilité selon matériel et droits.
 
 ## Encart studio dans Aegis et sur son site
