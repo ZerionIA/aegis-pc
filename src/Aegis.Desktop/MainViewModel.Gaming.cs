@@ -16,7 +16,7 @@ public sealed partial class MainViewModel
     private readonly DispatcherTimer gameTimer=new(){Interval=TimeSpan.FromSeconds(4)};
     private bool closingRequested,hudAutoOpened,gameScanBusy,automaticSession,autoRecordGames=true,showGameHud=true,autoGameFrames;
     private DateTimeOffset recordingSince;
-    private string customGameExecutables="",detectedGame="Aucun jeu détecté",hudCorner="TopLeft";
+    private string customGameExecutables="",detectedGame="Aucun jeu détecté",hudCorner="TopCenter";
     private double hudOpacity=.82,hudScale=1;
     internal IntPtr GameWindow{get;private set;}
     internal string? SmokeGameOnly{get;set;}
@@ -33,14 +33,15 @@ public sealed partial class MainViewModel
     public bool ShowGameHud{get=>showGameHud;set{showGameHud=value;if(!value)widget?.Close();Changed();}}
     public string CustomGameExecutables{get=>customGameExecutables;set{customGameExecutables=value;Changed();}}
     public string DetectedGame{get=>detectedGame;private set{detectedGame=value;Changed();}}
-    public string HudCorner{get=>hudCorner;set{hudCorner=Corners.Any(c=>c.Id==value)?value:"TopLeft";Changed();}}
+    public string HudCorner{get=>hudCorner;set{hudCorner=Corners.Any(c=>c.Id==value)?value:"TopCenter";Changed();}}
     public double HudOpacity{get=>hudOpacity;set{if(double.IsFinite(value)){hudOpacity=Math.Clamp(value,.25,1);Changed();}}}
     public double HudScale{get=>hudScale;set{if(double.IsFinite(value)){hudScale=Math.Clamp(value,.75,1.5);Changed();}}}
-    public Choice[] Corners{get;}=[new("TopLeft","En haut à gauche"),new("TopRight","En haut à droite"),new("BottomLeft","En bas à gauche"),new("BottomRight","En bas à droite")];
+    public Choice[] Corners{get;}=[new("TopCenter","En haut au centre"),new("BottomCenter","En bas au centre"),new("TopLeft","En haut à gauche"),new("TopRight","En haut à droite"),new("BottomLeft","En bas à gauche"),new("BottomRight","En bas à droite")];
     public Choice[] Languages{get;}=[new("fr","Français"),new("en","English")];
     public string Language{get=>L.Current.Language;set{L.Current.SetLanguage(value);Changed(null);}}
     public string CpuTemperature=>ComponentTemperature("cpu");
     public string GpuTemperature=>ComponentTemperature("gpu");
+    public string HudBarSession=>recorder.Active?"● "+(DateTimeOffset.UtcNow-recordingSince).ToString(@"hh:mm:ss"):"● LIVE";
     public string HudSession=>recorder.Active?L.Current.Translate("● Session en cours")+" · "+(DateTimeOffset.UtcNow-recordingSince).ToString(@"hh\:mm\:ss"):L.Current.Translate("Mesures en direct");
     private string ComponentTemperature(string component)
     {
@@ -98,7 +99,7 @@ public sealed partial class MainViewModel
         if(!SaveSettings(false))throw new InvalidOperationException("Preferences not saved");
         using var json=System.Text.Json.JsonDocument.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(data,"settings.json")));
         if(json.RootElement.GetProperty("HudCorner").GetString()!="BottomRight"||json.RootElement.GetProperty("HudScale").GetDouble()!=1.2)throw new InvalidOperationException("HUD preferences not persisted");
-        HudCorner="TopLeft";HudOpacity=.82;HudScale=1;
+        HudCorner="TopCenter";HudOpacity=.82;HudScale=1;
         if(latest is not null)
         {
             RefreshSensorGroups(latest);var first=SensorGroups[0];RefreshSensorGroups(latest);

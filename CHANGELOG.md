@@ -1,5 +1,12 @@
 # Historique
 
+## 0.5.1-beta.1 — 26 octobre 2026
+
+- HUD en barre horizontale fine, avec mesures et état sur une ligne.
+- Positions en haut et en bas au centre ajoutées ; nouvelle configuration centrée en haut par défaut.
+- Comportement passif sans prise de focus ni capture des clics conservé.
+
+
 ## 0.5.0-beta.1 — 25 octobre 2026
 
 - Navigation sans numéros et réglages par onglets.

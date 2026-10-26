@@ -165,5 +165,7 @@
   "tbeffe6c02af3": "Marquer une saccade · Ctrl+Alt+F8",
   "t105222158ca4": "Tous les composants",
   "t0223e476eead": "Rechercher un capteur ou un appareil",
-  "tfd77a88d2f27": "Inclure les capteurs indisponibles"
+  "tfd77a88d2f27": "Inclure les capteurs indisponibles",
+  "hudTopCenter": "En haut au centre",
+  "hudBottomCenter": "En bas au centre"
 }

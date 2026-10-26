@@ -165,5 +165,7 @@
   "tbeffe6c02af3": "Mark a stutter · Ctrl+Alt+F8",
   "t105222158ca4": "All components",
   "t0223e476eead": "Search sensors or devices",
-  "tfd77a88d2f27": "Include unavailable sensors"
+  "tfd77a88d2f27": "Include unavailable sensors",
+  "hudTopCenter": "Top center",
+  "hudBottomCenter": "Bottom center"
 }

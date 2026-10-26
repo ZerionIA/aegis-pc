@@ -108,7 +108,7 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
         var temps=s.Metrics.Where(m=>Metrics.IsTemperatureReading(m)&&m.State==MetricState.Available&&m.Value.HasValue).ToArray();Temperature=Format(temps.Length>0?temps.Max(m=>m.Value):null,"°C");
         // Le tableau détaillé n'est reconstruit que lorsqu'il est visible : moins de travail pendant les sessions.
         if(IsHardware)RefreshSensorGroups(s);
-        Changed(nameof(CpuTemperature));Changed(nameof(GpuTemperature));Changed(nameof(HudSession));
+        Changed(nameof(CpuTemperature));Changed(nameof(GpuTemperature));Changed(nameof(HudSession));Changed(nameof(HudBarSession));
         Chart.Add(new(s.MonotonicSeconds,Metrics.Latest(s,"cpu.load"),Metrics.Latest(s,"ram.load")));if(Chart.Count>120)Chart.RemoveAt(0);
         recorder.Add(s);Changed(nameof(RecordingStatus));if(recorder.Count==1)MarkerCommand.Refresh();
         if(AlertsEnabled)
@@ -244,7 +244,7 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
         string Delta(double? first,double? second)=>first.HasValue&&second.HasValue?$"{first:F1} → {second:F1} ({second-first:+0.0;-0.0;0.0} points)":"Mesure absente";
         Comparison=$"{a.Name} → {b.Name}\nCPU moyen : {Delta(x.CpuAverage,y.CpuAverage)}\nRAM maximale : {Delta(x.MemoryPeak,y.MemoryPeak)}\n\nComparaison descriptive : scène, durée et réglages ne sont pas validés comme identiques. Aucune conclusion causale.\nConditions A : {a.Conditions}\nConditions B : {b.Conditions}";
     }
-    private sealed record Settings(string PresentMon="",bool Alerts=false,double CpuLimit=95,double RamLimit=90,double TempLimit=85,string Theme="Forest",bool AutoUpdates=true,DateTimeOffset LastUpdateCheck=default,bool MinimizeToTray=true,bool HotkeyEnabled=true,string Language="fr",bool AutoRecordGames=true,bool ShowGameHud=true,string CustomGames="",string HudCorner="TopLeft",double HudOpacity=.82,double HudScale=1,bool AutoGameFrames=false);
+    private sealed record Settings(string PresentMon="",bool Alerts=false,double CpuLimit=95,double RamLimit=90,double TempLimit=85,string Theme="Forest",bool AutoUpdates=true,DateTimeOffset LastUpdateCheck=default,bool MinimizeToTray=true,bool HotkeyEnabled=true,string Language="fr",bool AutoRecordGames=true,bool ShowGameHud=true,string CustomGames="",string HudCorner="TopCenter",double HudOpacity=.82,double HudScale=1,bool AutoGameFrames=false);
     private void LoadSettings()
     {
         try{var path=Path.Combine(data,"settings.json");if(!File.Exists(path))return;var settings=JsonSerializer.Deserialize<Settings>(File.ReadAllText(path));if(settings is null)return;PresentMonPath=settings.PresentMon;AlertsEnabled=settings.Alerts;CpuThreshold=settings.CpuLimit;RamThreshold=settings.RamLimit;TempThreshold=settings.TempLimit;Theme=settings.Theme;AutoUpdates=settings.AutoUpdates;lastUpdateCheck=settings.LastUpdateCheck;MinimizeToTray=settings.MinimizeToTray;HotkeyEnabled=settings.HotkeyEnabled;Language=settings.Language;AutoRecordGames=settings.AutoRecordGames;ShowGameHud=settings.ShowGameHud;CustomGameExecutables=settings.CustomGames;HudCorner=settings.HudCorner;HudOpacity=settings.HudOpacity;HudScale=settings.HudScale;AutoGameFrames=settings.AutoGameFrames;}
