@@ -14,3 +14,7 @@ Campagne Windows x64 du 26 octobre 2026.
 Les confirmations UAC doivent être acceptées par l’utilisateur. Un refus garde l’app utilisable avec des métriques limitées ; il ne produit pas de fausse température. Aucun redémarrage forcé, changement de permission du pilote ou désactivation de protection. Le système peut demander un redémarrage après installation du pilote. Le test de refus de privilèges couvre la politique et le mode basique ; aucun clic UAC n’est automatisé. Le parcours a été exercé sur ce PC, pas sur une matrice de machines virtuelles fraîchement installées.
 
 Bêta Aegis non signée Authenticode ; le prérequis PawnIO conserve sa signature officielle. Les limites de compatibilité matérielle, de stabilité longue durée, de plein écran exclusif et d’anti-cheat restent applicables. Pas de FPS en direct.
+
+## Paquet public vérifié
+
+CI et packaging GitHub réussis. Installateur public téléchargé par le client de l’app, empreinte vérifiée, installation et activation du mode complet terminées avec retour 0. Version installée 0.6 vérifiée, prérequis et sources présents, application réactive sans nouvelle erreur de journal. Site version 7 déployé et HTTP 200. Aucun pilote ajouté par la phase silencieuse : le pilote de ce PC avait été installé après accord explicite et son accès complet validé.
