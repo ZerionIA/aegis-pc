@@ -15,6 +15,8 @@ public static class GameCatalog
         ["dota2"]="Dota 2",["RainbowSix"]="Rainbow Six Siege",["eldenring"]="Elden Ring",
         ["Cyberpunk2077"]="Cyberpunk 2077",["bg3"]="Baldur’s Gate 3",["bg3_dx11"]="Baldur’s Gate 3"
     };
+    public static string? LauncherTitle(string executable)=>Normalize(executable) is var name &&
+        (name.Equals("LeagueClient",StringComparison.OrdinalIgnoreCase)||name.Equals("LeagueClientUx",StringComparison.OrdinalIgnoreCase))?"League of Legends":null;
     public static string Normalize(string executable)=>executable.EndsWith(".exe",StringComparison.OrdinalIgnoreCase)?executable[..^4]:executable;
     public static string? Title(string executable,string custom="")
     {
@@ -26,8 +28,9 @@ public static class GameCatalog
 }
 
 /// <summary>Debounce start, tolerate short disappearance, never restart a manually stopped game.</summary>
-public sealed class GameSessionPlanner
+public sealed class GameSessionPlanner(int missingObservations=3)
 {
+    private readonly int missingRequired=missingObservations>0?missingObservations:throw new ArgumentOutOfRangeException(nameof(missingObservations));
     private readonly HashSet<(int,long)> suppressed=[];
     private GameProcess? candidate;
     private int seen,missing;
@@ -39,7 +42,7 @@ public sealed class GameSessionPlanner
         if(Active is {} active)
         {
             if(games.Any(g=>(g.Id,g.Started)==(active.Id,active.Started))){missing=0;return null;}
-            if(++missing<3)return null;
+            if(++missing<missingRequired)return null;
             Active=null;candidate=null;seen=missing=0;return new(active,false);
         }
         if(!mayStart){candidate=null;seen=0;return null;}

@@ -64,7 +64,7 @@
   "t3c1d5c601503": "Réduire dans la zone de notification près de l’horloge",
   "t315d3c21ba46": "Marquer une saccade avec Ctrl+Alt+F8 pendant une session",
   "t4537fedece0b": "Démarrer Aegis discrètement avec ma session Windows",
-  "t8d19f18c781e": "Le démarrage Windows est facultatif et appliqué uniquement avec Enregistrer. Fermer la fenêtre quitte Aegis ; la réduire peut la garder active près de l’horloge.",
+  "t8d19f18c781e": "Le démarrage Windows est facultatif et appliqué avec Enregistrer. Par défaut, × garde Aegis près de l’horloge. Quitter Aegis l’arrête et conserve la session.",
   "t0e3dc796838e": "Enregistrer les réglages",
   "tb0e3f305b728": "Un thème pour votre espace de travail.",
   "t3e91b633157d": "Langue de l’interface",
@@ -194,5 +194,14 @@
   "usage.enabled": "Statistiques facultatives activées. Signal au plus toutes les 15 minutes, y compris si l’app est réduite.",
   "usage.disabled": "Statistiques facultatives désactivées. Aucun signal d’activité envoyé.",
   "usage.deleting": "Statistiques désactivées. Suppression en attente de connexion ; aucun nouveau signal d’activité.",
-  "usage.internal": "Exécution interne : aucun signal d’activité envoyé."
+  "usage.internal": "Exécution interne : aucun signal d’activité envoyé.",
+  "hud.startup": "Afficher le HUD dès l’ouverture d’Aegis",
+  "hud.starting": "● DÉMARRAGE",
+  "lifecycle.close": "Fermer la fenêtre garde Aegis actif près de l’horloge",
+  "lifecycle.exit": "Quitter Aegis",
+  "lifecycle.tray.title": "Aegis reste actif",
+  "lifecycle.tray.body": "Le HUD et les sessions continuent. Double-cliquez sur l’icône pour rouvrir Aegis. Pour arrêter, choisissez Quitter dans son menu.",
+  "gaming.client": "Client LoL ouvert — en attente d’une partie",
+  "gaming.client.hint": "Le client LoL est ouvert. La session démarre quand le processus de la partie est détecté ; le client seul n’est pas enregistré. Le HUD peut déjà rester visible.",
+  "gaming.hint": "Le HUD est disponible dès l’ouverture. Un jeu reconnu est recherché chaque seconde ; la session attend deux observations stables et les premières mesures. Réglages → Jeux permet de personnaliser la détection."
 }

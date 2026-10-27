@@ -7,23 +7,41 @@ namespace Aegis.Desktop;
 public partial class MainWindow : Window
 {
     private readonly MainViewModel model=new();
-    private bool cleaned,closing;
+    private bool cleaned,closing,exitRequested;
     private DailyCompanion? companion;
     public MainWindow()
     {
-        InitializeComponent();DataContext=model;model.UpdateInstallationRequested+=()=>Close();
+        InitializeComponent();DataContext=model;model.UpdateInstallationRequested+=RequestExit;model.ExitRequested+=RequestExit;
+        System.Windows.Application.Current.SessionEnding+=(_,_)=>exitRequested=true;
         SourceInitialized+=(_,_)=>{companion=new(this,model);companion.Attach();};
         StateChanged+=(_,_)=>{if(WindowState==WindowState.Minimized&&model.MinimizeToTray)companion?.Hide();};
         Loaded+=async(_,_)=>
         {
+            var args=Environment.GetCommandLineArgs();
+            if(args.Contains("--english"))model.Language="en";
+            if(!args.Contains("--smoke")||args.Contains("--startup-hud"))model.ShowStartupHud();
+            if(args.Contains("--hud")&&!model.IsHudVisible)model.WidgetCommand.Execute(null);
+            if(args.Contains("--background"))companion?.Hide();
             try{await model.InitializeAsync();}catch(Exception e){MessageBox.Show(e.Message,"Aegis");}
-            var args=Environment.GetCommandLineArgs();if(args.Contains("--background"))companion?.Hide();if(args.Contains("--hud"))model.WidgetCommand.Execute(null);int i=Array.IndexOf(args,"--smoke");
+            int i=Array.IndexOf(args,"--smoke");
             if(i>=0&&i+1<args.Length)
             {
                 if(args.Contains("--gaming"))model.SmokeGameOnly="AegisGameFixture";if(args.Contains("--english"))model.Language="en";if(!args.Contains("--gaming")){model.AutoRecordGames=false;model.ShowGameHud=false;}
                 await Task.Delay(7000);model.SmokePreferences();if(args.Contains("--full-sensors")&&model.CpuTemperature=="—")throw new InvalidOperationException("CPU temperature not received after full access");
                 if(args.Contains("--sensors")){model.HardwareCommand.Execute(null);await Task.Delay(1500);if(model.SensorGroups.Count==0)throw new InvalidOperationException("Sensor groups missing");}
-                if(args.Contains("--gaming")){int fixtureIndex=Array.IndexOf(args,"--fixture");using var fixture=System.Diagnostics.Process.Start(args[fixtureIndex+1])!;model.CustomGameExecutables="AegisGameFixture.exe";model.AutoRecordGames=true;model.ShowGameHud=true;await Task.Delay(10000);if(!model.IsRecording||!model.SessionName.StartsWith("AegisGameFixture"))throw new InvalidOperationException("Auto session missing: "+model.GamingDebug);var hud=System.Windows.Application.Current.Windows.OfType<SensorWidget>().Single();if(!hud.IsPassive||!hud.Topmost||hud.ShowInTaskbar)throw new InvalidOperationException("HUD must be passive");Capture(hud,args[i+1]+".hud.png");await fixture.WaitForExitAsync();await Task.Delay(14000);if(model.IsRecording)throw new InvalidOperationException("Auto session did not stop");model.LastSessionCommand.Execute(null);await Task.Delay(500);File.WriteAllText(args[i+1]+".gaming.txt","GAME_AUTOSTART_AUTOSTOP_HUD_PASSIVE_OK");}
+                if(args.Contains("--gaming")){int fixtureIndex=Array.IndexOf(args,"--fixture");using var fixture=System.Diagnostics.Process.Start(args[fixtureIndex+1])!;model.CustomGameExecutables="AegisGameFixture.exe";model.AutoRecordGames=true;model.ShowGameHud=true;var detection=System.Diagnostics.Stopwatch.StartNew();while(!model.IsRecording&&detection.Elapsed<TimeSpan.FromSeconds(4))await Task.Delay(100);if(!model.IsRecording||!model.SessionName.StartsWith("AegisGameFixture"))throw new InvalidOperationException("Auto session missing: "+model.GamingDebug);var hud=System.Windows.Application.Current.Windows.OfType<SensorWidget>().Single();if(!hud.IsPassive||!hud.Topmost||hud.ShowInTaskbar)throw new InvalidOperationException("HUD must be passive");Capture(hud,args[i+1]+".hud.png");await fixture.WaitForExitAsync();await Task.Delay(14000);if(model.IsRecording)throw new InvalidOperationException("Auto session did not stop");model.LastSessionCommand.Execute(null);await Task.Delay(500);File.WriteAllText(args[i+1]+".gaming.txt","GAME_AUTOSTART_AUTOSTOP_HUD_PASSIVE_OK");}
+                if(args.Contains("--client-check")&&(!model.DetectedGame.StartsWith("Client LoL")||model.IsRecording))throw new InvalidOperationException("LoL client state must not record a match");
+                if(args.Contains("--lifecycle"))
+                {
+                    if(!model.IsHudVisible)throw new InvalidOperationException("Startup HUD missing");
+                    var initialHud=System.Windows.Application.Current.Windows.OfType<SensorWidget>().Single();
+                    model.RecordCommand.Execute(null);await Task.Delay(1500);if(!model.IsRecording)throw new InvalidOperationException("Recording did not start");
+                    Close();await Task.Delay(300);
+                    if(IsVisible||!initialHud.IsVisible||!model.IsRecording||companion is null||!companion.TrayVisible)throw new InvalidOperationException("Close must keep tray and HUD alive");
+                    companion.Restore();if(!IsVisible)throw new InvalidOperationException("Restore after close failed");
+                    model.RecordCommand.Execute(null);await Task.Delay(1000);if(model.IsRecording)throw new InvalidOperationException("Recording did not stop after restore");
+                    File.WriteAllText(args[i+1]+".lifecycle.txt","STARTUP_HUD_CLOSE_TO_TRAY_RESTORE_EXPLICIT_EXIT_OK");
+                }
                 if(args.Contains("--daily")){if(companion is null||!companion.TrayVisible)throw new InvalidOperationException("Tray icon missing");companion.Hide();if(IsVisible)throw new InvalidOperationException("Tray hide failed");companion.Restore();model.SessionName="Quotidien test";model.RecordCommand.Execute(null);await Task.Delay(3000);var markers=model.SmokeMarkerCount;companion.SmokeDispatchMarker();if(model.SmokeMarkerCount!=markers+1)throw new InvalidOperationException("Shortcut marker missing");model.RecordCommand.Execute(null);await Task.Delay(2000);model.LastSessionCommand.Execute(null);await Task.Delay(500);model.SessionQuery="Quotidien";if(model.SessionsView.IsEmpty)throw new InvalidOperationException("Session search failed");model.SmokeWriteSupport(args[i+1]+".json");await model.SmokeSaveRecoveryAsync();}
                 if(args.Contains("--discover"))model.DiscoverCommand.Execute(null);
                 if(args.Contains("--light"))model.Theme="Light";
@@ -39,15 +57,18 @@ public partial class MainWindow : Window
                 await Task.Delay(500);UpdateLayout();
                 Window capture=args.Contains("--widget")?System.Windows.Application.Current.Windows.OfType<SensorWidget>().Single():this;
                 Capture(capture,args[i+1]);
-                Close();
+                RequestExit();
             }
         };
         Closing+=OnClosing;
     }
     private static void Capture(Window window,string path){window.UpdateLayout();var bitmap=new RenderTargetBitmap((int)window.ActualWidth,(int)window.ActualHeight,96,96,PixelFormats.Pbgra32);bitmap.Render(window);var encoder=new PngBitmapEncoder();encoder.Frames.Add(BitmapFrame.Create(bitmap));using var file=File.Create(path);encoder.Save(file);}
+    private void RequestExit(){exitRequested=true;Close();}
     private async void OnClosing(object? sender,CancelEventArgs e)
     {
-        if(cleaned)return;e.Cancel=true;if(closing)return;closing=true;IsEnabled=false;
+        if(cleaned)return;
+        if(!exitRequested&&model.CloseToTray&&companion is {TrayVisible:true}){e.Cancel=true;companion.Hide(explain:true);return;}
+        e.Cancel=true;if(closing)return;closing=true;IsEnabled=false;
         bool saved;try{saved=await model.PrepareCloseAsync();}catch(Exception error){App.Log(error.ToString());model.ResumeAfterCancelledClose();closing=false;IsEnabled=true;MessageBox.Show("Fermeture interrompue : "+error.Message,"Aegis");return;}
         if(!saved&&MessageBox.Show("La session ne peut pas être sauvegardée. Fermer quand même et perdre les mesures non enregistrées ?","Aegis",MessageBoxButton.YesNo,MessageBoxImage.Warning,MessageBoxResult.No)!=MessageBoxResult.Yes){model.ResumeAfterCancelledClose();closing=false;IsEnabled=true;return;}
         try{await model.DisposeAsync();}catch(Exception error){MessageBox.Show("Fermeture : "+error.Message,"Aegis");}

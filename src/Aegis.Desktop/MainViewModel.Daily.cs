@@ -7,6 +7,10 @@ namespace Aegis.Desktop;
 
 public sealed partial class MainViewModel
 {
+    private bool closeToTray=true;
+    public bool CloseToTray{get=>closeToTray;set{closeToTray=value;Changed();}}
+    public event Action? ExitRequested;
+    public Command ExitCommand{get;private set;}=null!;
     private bool minimizeToTray=true,hotkeyEnabled=true,startWithWindows;
     private string hotkeyStatus="Initialisation du raccourci…",sessionQuery="";
     private Aegis.Domain.Session? pendingSave;
@@ -21,6 +25,7 @@ public sealed partial class MainViewModel
     public AsyncCommand SupportReportCommand{get;private set;}=null!;
     private void InitializeDaily()
     {
+        ExitCommand=new(()=>ExitRequested?.Invoke());
         SessionsView=new ListCollectionView(Sessions);
         SessionsView.Filter=row=>row is SessionRow item&&(item.Title.Contains(SessionQuery,StringComparison.OrdinalIgnoreCase)||item.Date.Contains(SessionQuery,StringComparison.OrdinalIgnoreCase));
         startWithWindows=StartupRegistration.IsEnabled(Path.Combine(AppContext.BaseDirectory,"Aegis.exe"));

@@ -27,7 +27,7 @@ public sealed class DailyCompanion:IDisposable
         menu.Items.Add(marker);marker.Click+=(_,_)=>Mark();
         menu.Items.Add("Panneau compact",null,(_,_)=>model.WidgetCommand.Execute(null));
         menu.Items.Add(new Forms.ToolStripSeparator());
-        menu.Items.Add("Quitter et conserver la session",null,(_,_)=>window.Close());
+        menu.Items.Add("Quitter et conserver la session",null,(_,_)=>model.ExitCommand.Execute(null));
         menu.Opening+=(_,_)=>{record.Text=L.Current.Translate(model.RecordLabel);record.Enabled=model.RecordCommand.CanExecute(null);marker.Enabled=model.MarkerCommand.CanExecute(null);};
         L.Current.Changed+=TranslateMenu;TranslateMenu();tray.DoubleClick+=(_,_)=>Restore();model.PropertyChanged+=OnChanged;
     }
@@ -39,7 +39,12 @@ public sealed class DailyCompanion:IDisposable
         source=HwndSource.FromHwnd(new WindowInteropHelper(window).Handle);source?.AddHook(Hook);ApplyHotkey();
     }
     public void Restore(){if(disposed)return;window.Show();window.WindowState=WindowState.Normal;window.Activate();}
-    public void Hide()=>window.Hide();
+    private bool hideNoticeShown;
+    public void Hide(bool explain=false)
+    {
+        window.Hide();
+        if(explain&&!hideNoticeShown){hideNoticeShown=true;tray.ShowBalloonTip(3500,L.Current["lifecycle.tray.title"],L.Current["lifecycle.tray.body"],Forms.ToolTipIcon.Info);}
+    }
     private void Mark(){if(model.MarkerCommand.CanExecute(null))model.MarkerCommand.Execute(null);}
     private void OnChanged(object? sender,PropertyChangedEventArgs e)
     {

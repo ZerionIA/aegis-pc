@@ -64,7 +64,7 @@
   "t3c1d5c601503": "Minimize to the notification area near the clock",
   "t315d3c21ba46": "Mark a stutter with Ctrl+Alt+F8 during a session",
   "t4537fedece0b": "Start Aegis in the background when I sign in to Windows",
-  "t8d19f18c781e": "Windows startup is optional and applied when you save. Closing quits Aegis; minimizing can keep it running near the clock.",
+  "t8d19f18c781e": "Windows startup is optional and applied with Save settings. By default, × keeps Aegis in the tray. Quit Aegis stops it and preserves the session.",
   "t0e3dc796838e": "Save settings",
   "tb0e3f305b728": "A theme for your workspace.",
   "t3e91b633157d": "Interface language",
@@ -194,5 +194,14 @@
   "usage.enabled": "Optional usage reporting enabled. A signal is sent at most every 15 minutes, including while minimised.",
   "usage.disabled": "Optional usage reporting disabled. No activity signal is sent.",
   "usage.deleting": "Reporting disabled. Deletion pending a connection; no new activity signals.",
-  "usage.internal": "Internal run: no activity signal is sent."
+  "usage.internal": "Internal run: no activity signal is sent.",
+  "hud.startup": "Show the HUD when Aegis opens",
+  "hud.starting": "● STARTING",
+  "lifecycle.close": "Closing the window keeps Aegis running in the system tray",
+  "lifecycle.exit": "Quit Aegis",
+  "lifecycle.tray.title": "Aegis is still running",
+  "lifecycle.tray.body": "The HUD and sessions continue. Double-click the tray icon to reopen Aegis. Choose Quit in its menu to stop it.",
+  "gaming.client": "LoL client open — waiting for a match",
+  "gaming.client.hint": "The LoL client is open. Recording starts when the match process is detected; the client alone is not recorded. The HUD can already stay visible.",
+  "gaming.hint": "The HUD is available on launch. Recognised games are checked every second; recording waits for two stable observations and initial readings. Customise detection in Settings → Games."
 }

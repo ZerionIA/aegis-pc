@@ -39,3 +39,11 @@ Aegis peut vérifier et télécharger les nouvelles releases GitHub hors session
 ## Statistiques et retours (0.7)
 
 Le tableau de bord propose un choix facultatif. Refuser laisse toutes les fonctions disponibles. Réglages → Statistiques et retours permet de changer ce choix et demander la suppression. Donner mon avis ouvre les questions et le choix e-mail/GitHub sans envoi automatique. Voir PRIVACY.md.
+
+## Changements 0.8 — HUD et arrière-plan
+
+Le HUD apparaît dès l’ouverture par défaut, avant même une partie. La croix garde Aegis actif près de l’horloge : HUD et sessions continuent. Double-cliquer l’icône pour rouvrir ; choisir **Quitter Aegis** pour arrêter. Ces préférences se changent dans Général et Affichage en jeu puis se sauvegardent.
+
+Le client LoL est identifié en attente de partie. Le processus du match démarre la session après deux observations stables et disponibilité des premières mesures. Recherche chaque seconde ; environ douze secondes d’absence avant arrêt. Les autorisations Windows ou le temps des capteurs peuvent ajouter un délai. Utiliser Fenêtré/Sans bordure pour voir le HUD externe.
+
+SmartScreen peut afficher un avertissement car la bêta Aegis n’est pas signée Authenticode. Cette mise à jour ne désactive ni ne contourne cette protection. Le prérequis PawnIO conserve sa signature officielle ; elle ne signe pas Aegis lui-même.

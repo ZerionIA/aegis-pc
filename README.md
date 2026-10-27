@@ -14,6 +14,12 @@ Dans Réglages → Statistiques et retours, vous pouvez accepter ou refuser le c
 
 Le bouton **Donner mon avis** ouvre trois questions puis vous laisse choisir e-mail ou issue GitHub. Aucun message n’est envoyé automatiquement. [Donner un retour](https://zerionia.com/apps/aegis#feedback).
 
+## Démarrage, arrière-plan et LoL
+
+Depuis 0.8, le HUD apparaît à l’ouverture. Réglages → Affichage en jeu permet de désactiver ce comportement. La croix garde l’app dans la zone de notification ; double-cliquer sur son icône la restaure. **Quitter Aegis** arrête réellement l’app et conserve la session. Réglages → Général permet de retrouver une fermeture complète par la croix.
+
+Le client LoL est affiché comme ouvert et en attente de partie. Il ne démarre pas une session : c’est le processus de jeu qui compte. Le HUD peut déjà rester visible. Une courte attente reste normale pour les deux observations et les premières mesures ; aucun démarrage instantané universel n’est garanti.
+
 ## Installation complète, sans téléchargement manuel
 
 Le paquet contient .NET, PresentMon et l’installateur officiel signé de **PawnIO 2.2.0**. Pendant l’installation, l’option « Capteurs CPU complets » est proposée et explique la confirmation administrateur. Si PawnIO est déjà compatible, il est réutilisé ; une version plus récente n’est pas remplacée par une ancienne. Aegis peut être lancé depuis la fin de l’assistant.
@@ -24,8 +30,8 @@ Les sources et licences de PawnIO sont jointes aux notices. Ce pilote peut être
 
 ## Pensé pour jouer
 
-- **HUD discret en jeu** : sans bordure, en barre horizontale, centrée en haut par défaut, CPU/GPU/RAM et températures CPU/GPU disponibles. Clics traversants, sans prise de focus. Position dans les quatre coins ou au centre, taille et opacité réglables.
-- **Sessions automatiques** : détection locale de jeux reconnus, dont le processus de partie LoL, et noms d’exécutables personnalisables. Deux observations avant démarrage ; environ 12 secondes d’absence avant arrêt. Un arrêt manuel bloque la reprise jusqu’au prochain lancement.
+- **HUD discret, visible dès le lancement par défaut** : sans bordure, en barre horizontale, centrée en haut par défaut, CPU/GPU/RAM et températures CPU/GPU disponibles. Clics traversants, sans prise de focus. Position dans les quatre coins ou au centre, taille et opacité réglables.
+- **Sessions automatiques** : détection locale de jeux reconnus, dont le processus de partie LoL, et noms d’exécutables personnalisables. Recherche chaque seconde, deux observations stables et premières mesures avant démarrage ; environ 12 secondes d’absence avant arrêt. Un arrêt manuel bloque la reprise jusqu’au prochain lancement.
 - **Capteurs classés** par CPU, GPU, RAM, réseau, stockage et système, avec recherche et filtre. Valeurs disponibles d’abord, puis tri température/charge/puissance/fréquence. Groupes repliables sans réinitialisation à chaque mesure.
 - **Réglages par onglets** : Jeux, Affichage en jeu, Général, Apparence et langues, Alertes, Mises à jour, Avancé, Capteurs CPU. Packs d’interface français et anglais intégrés, changement immédiat. Les noms de capteurs, de sessions et les détails techniques externes restent natifs.
 
@@ -59,7 +65,7 @@ Le rapport support est créé localement après choix d'un fichier ; il contient
 
 ## Installation
 
-Télécharger l’installateur courant depuis le bouton du site, qui suit les releases GitHub publiées complètes. Le runtime .NET est inclus. Installation par utilisateur sans élévation automatique. Fermer Aegis avant mise à jour ou désinstallation. Les données restent dans %LOCALAPPDATA%/AegisNext après désinstallation.
+Télécharger l’installateur courant depuis le bouton du site, qui suit les releases GitHub publiées complètes. Le runtime .NET est inclus. Installation par utilisateur sans élévation automatique. Utiliser **Quitter Aegis** dans l’app ou le menu près de l’horloge avant désinstallation. Par défaut, la croix masque seulement la fenêtre : le HUD et les sessions continuent. Les mises à jour déclenchent une sortie complète après confirmation. Les données restent dans %LOCALAPPDATA%/AegisNext après désinstallation.
 
 Bêta non signée : Windows peut afficher un avertissement. Vérifier la provenance et SHA256SUMS.txt. Aegis ne demande pas de désactiver une protection Windows. Le panneau de bureau peut être masqué par le plein écran exclusif ; ce n'est pas un overlay injecté.
 
