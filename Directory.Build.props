@@ -8,7 +8,7 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <Deterministic>true</Deterministic>
     <VersionPrefix>0.7.0</VersionPrefix>
-    <VersionSuffix>beta.1</VersionSuffix>
+    <VersionSuffix>beta.2</VersionSuffix>
     <Product>Aegis</Product>
     <Copyright>Aegis contributors</Copyright>
     <SatelliteResourceLanguages>fr</SatelliteResourceLanguages>

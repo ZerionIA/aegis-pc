@@ -35,3 +35,7 @@ Pour un bug reproductible, joindre les étapes, la version d’Aegis et ce qui �
 ## Mettre à jour
 
 Aegis peut vérifier et télécharger les nouvelles releases GitHub hors session. L’installation demande confirmation. Un simple commit sur GitHub ne met pas les utilisateurs à jour. Les sessions restent dans le dossier de données après mise à jour ou désinstallation.
+
+## Statistiques et retours (0.7)
+
+Le tableau de bord propose un choix facultatif. Refuser laisse toutes les fonctions disponibles. Réglages → Statistiques et retours permet de changer ce choix et demander la suppression. Donner mon avis ouvre les questions et le choix e-mail/GitHub sans envoi automatique. Voir PRIVACY.md.
