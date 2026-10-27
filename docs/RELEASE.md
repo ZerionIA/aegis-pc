@@ -12,3 +12,7 @@ Aegis utilise uniquement les releases publiées de ZerionIA/aegis-pc, un nom de 
 Le programme de mise à jour est copié hors du dossier installé afin de pouvoir remplacer ses propres binaires. Il vérifie à nouveau les métadonnées officielles et l'empreinte, attend la fermeture d'Aegis, lance l'installateur par utilisateur, puis ouvre l'application installée. Les données de session sont conservées.
 
 HTTPS et SHA-256 vérifient l'intégrité via GitHub. Ce n'est pas une signature indépendante de l'éditeur ni Authenticode. Le compte GitHub et les droits de publication doivent donc rester protégés. Aucune clé privée supplémentaire n'est stockée dans le dépôt ou exportée vers GitHub par cette configuration.
+
+## Site synchronisé automatiquement
+
+Après publication complète de la release par le workflow, zerionia.com/apps/aegis récupère automatiquement version, nom, taille, SHA-256 et notes depuis GitHub. Prévoir environ cinq à dix minutes de cache et une consultation de la page pour le rafraîchissement. Aucun secret partagé entre dépôts ni commit de version sur le site n’est nécessaire. Le lien stable du README suit le même point de téléchargement ; le bouton de la page garde la cohérence avec sa version affichée. En cas de panne ou de limite GitHub, un paquet de secours vérifié reste disponible. Les changements éditoriaux du guide restent à maintenir si les fonctions évoluent.

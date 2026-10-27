@@ -2,11 +2,11 @@
 
 **Votre PC, en clair.** Monitoring Windows gratuit et open source. Sans compte, publicité ni paiement. Statistiques d’usage facultatives, désactivées jusqu’à votre accord.
 
-**0.7.0-beta.2 · Windows 10/11 x64 · Bêta publique non signée.**
+**Windows 10/11 x64 · Version courante sur le site · Bêta publique non signée.**
 
-[**Télécharger l’installateur Windows (.exe)**](https://github.com/ZerionIA/aegis-pc/releases/download/v0.7.0-beta.2/Aegis-0.7.0-beta.2-Setup.exe) · [Guide d’installation et première session](https://zerionia.com/apps/aegis#installation) · [Site officiel](https://zerionia.com/apps/aegis)
+[**Télécharger l’installateur Windows (.exe)**](https://zerionia.com/apps/aegis/download) · [Guide d’installation et première session](https://zerionia.com/apps/aegis#installation) · [Site officiel](https://zerionia.com/apps/aegis)
 
-Installateur Windows complet avec runtime et prérequis CPU officiel signé inclus. La bêta Aegis elle-même reste non signée. [Notes de version et SHA-256](https://github.com/ZerionIA/aegis-pc/releases/tag/v0.7.0-beta.2) · [Aide et problèmes](https://github.com/ZerionIA/aegis-pc/issues) · [Confidentialité](PRIVACY.md)
+Installateur Windows complet avec runtime et prérequis CPU officiel signé inclus. La bêta Aegis elle-même reste non signée. [Notes de version et SHA-256](https://github.com/ZerionIA/aegis-pc/releases) · [Aide et problèmes](https://github.com/ZerionIA/aegis-pc/issues) · [Confidentialité](PRIVACY.md)
 
 ## Usage facultatif et retours
 
@@ -59,7 +59,7 @@ Le rapport support est créé localement après choix d'un fichier ; il contient
 
 ## Installation
 
-Télécharger Aegis-0.7.0-beta.2-Setup.exe depuis une GitHub Release. Le runtime .NET est inclus. Installation par utilisateur sans élévation automatique. Fermer Aegis avant mise à jour ou désinstallation. Les données restent dans %LOCALAPPDATA%/AegisNext après désinstallation.
+Télécharger l’installateur courant depuis le bouton du site, qui suit les releases GitHub publiées complètes. Le runtime .NET est inclus. Installation par utilisateur sans élévation automatique. Fermer Aegis avant mise à jour ou désinstallation. Les données restent dans %LOCALAPPDATA%/AegisNext après désinstallation.
 
 Bêta non signée : Windows peut afficher un avertissement. Vérifier la provenance et SHA256SUMS.txt. Aegis ne demande pas de désactiver une protection Windows. Le panneau de bureau peut être masqué par le plein écran exclusif ; ce n'est pas un overlay injecté.
 
