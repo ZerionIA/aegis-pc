@@ -182,5 +182,17 @@
   "t41ac947f0e1a": "Collector restarted. Full access requests Windows confirmation; declining keeps basic mode.",
   "t81646c6a6150": "CPU temperature: administrator access required. Enable full sensors in Settings → CPU sensors.",
   "tedb17325e39f": "CPU temperature: PawnIO prerequisite missing. Open Settings → CPU sensors to configure it.",
-  "t03fa9974e83e": "CPU temperature is not exposed by this hardware despite driver access."
+  "t03fa9974e83e": "CPU temperature is not exposed by this hardware despite driver access.",
+  "usage.title": "Help improve Aegis",
+  "usage.explain": "Share an optional activity signal? Random ID, version and activity dates only. No sensors, games or sessions are sent. The server stores a pseudonymous hash. Your choice does not limit any feature.",
+  "usage.allow": "Allow optional usage reporting",
+  "usage.decline": "Decline or disable and request deletion",
+  "usage.privacy": "About usage reporting ↗",
+  "usage.tab": "Usage and feedback",
+  "usage.feedback": "Give feedback on Aegis ↗",
+  "usage.feedback.help": "What helped? What got in the way? What is missing? Choose email or GitHub and review your message before sending.",
+  "usage.enabled": "Optional usage reporting enabled. A signal is sent at most every 15 minutes, including while minimised.",
+  "usage.disabled": "Optional usage reporting disabled. No activity signal is sent.",
+  "usage.deleting": "Reporting disabled. Deletion pending a connection; no new activity signals.",
+  "usage.internal": "Internal run: no activity signal is sent."
 }

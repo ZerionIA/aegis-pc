@@ -28,7 +28,7 @@ public partial class MainWindow : Window
                 if(args.Contains("--discover"))model.DiscoverCommand.Execute(null);
                 if(args.Contains("--light"))model.Theme="Light";
                 if(args.Contains("--settings")){model.SettingsCommand.Execute(null);model.AlertsEnabled=true;model.RamThreshold=1;await Task.Delay(5000);if(model.AlertHistory.Count==0)throw new InvalidOperationException("Smoke: no alert after three real RAM samples.");}
-                if(args.Contains("--tab-cpu")){model.SettingsCommand.Execute(null);SettingsTabs.SelectedIndex=7;}if(args.Contains("--tab-hud")){model.SettingsCommand.Execute(null);SettingsTabs.SelectedIndex=1;}if(args.Contains("--tab-language")){model.SettingsCommand.Execute(null);SettingsTabs.SelectedIndex=3;}
+                if(args.Contains("--tab-usage")){model.SettingsCommand.Execute(null);SettingsTabs.SelectedIndex=8;}if(args.Contains("--tab-cpu")){model.SettingsCommand.Execute(null);SettingsTabs.SelectedIndex=7;}if(args.Contains("--tab-hud")){model.SettingsCommand.Execute(null);SettingsTabs.SelectedIndex=1;}if(args.Contains("--tab-language")){model.SettingsCommand.Execute(null);SettingsTabs.SelectedIndex=3;}
                 if(args.Contains("--widget")){model.WidgetCommand.Execute(null);var hud=System.Windows.Application.Current.Windows.OfType<SensorWidget>().Single();if(!hud.IsPassive)throw new InvalidOperationException("HUD not passive");model.WidgetCommand.Execute(null);if(System.Windows.Application.Current.Windows.OfType<SensorWidget>().Any())throw new InvalidOperationException("HUD toggle did not hide");model.WidgetCommand.Execute(null);}
                 if(args.Contains("--sessions"))
                 {

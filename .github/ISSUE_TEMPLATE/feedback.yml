@@ -1,0 +1,25 @@
+name: App feedback / Retour sur Aegis
+description: Tell us what helped, what blocked you and what is missing. English or French welcome.
+title: "[Feedback] "
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for trying Aegis. This issue will be public. Do not include personal information, raw logs or session files."
+  - type: textarea
+    id: useful
+    attributes:
+      label: What helped? / Qu’est-ce qui vous a servi ?
+    validations:
+      required: true
+  - type: textarea
+    id: blockers
+    attributes:
+      label: What got in the way? / Qu’est-ce qui bloque ?
+  - type: textarea
+    id: missing
+    attributes:
+      label: What is missing? / Que manque-t-il ?
+  - type: input
+    id: version
+    attributes:
+      label: Aegis version (optional)

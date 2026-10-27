@@ -74,4 +74,5 @@ await UpdateTests.RunAsync(Check,root);
 await DailyTests.RunAsync(Check,root);
 GameTests.Run(Check);
 await HardwareTests.RunAsync(Check);
+await UsageTests.RunAsync(Check,root);
 Console.WriteLine($"{passed} checks passed.");

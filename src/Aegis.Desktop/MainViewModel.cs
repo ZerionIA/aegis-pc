@@ -93,11 +93,11 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
         
         
         if(store.QuarantinedDatabase is not null)Status="La base de sessions était illisible : elle a été conservée à part ("+Path.GetFileName(store.QuarantinedDatabase)+") et une base neuve a été créée.";
-        InitializeProduct();InitializeDaily();InitializeGaming();InitializeHardware();
+        InitializeProduct();InitializeDaily();InitializeGaming();InitializeHardware();InitializeUsage();
         RefreshProcesses();
         collector.Sample+=s=>dispatcher.BeginInvoke(()=>Accept(s));collector.Fault+=e=>dispatcher.BeginInvoke(()=>_=OnCollectorFaultAsync(e));
     }
-    public async Task InitializeAsync(){await RefreshSessions();await collector.StartAsync(FullSensorAccess&&(!Environment.GetCommandLineArgs().Contains("--smoke")||Environment.GetCommandLineArgs().Contains("--full-sensors")));_ = CheckAutomaticUpdatesAsync();}
+    public async Task InitializeAsync(){_ = usage.TickAsync();await RefreshSessions();await collector.StartAsync(FullSensorAccess&&(!Environment.GetCommandLineArgs().Contains("--smoke")||Environment.GetCommandLineArgs().Contains("--full-sensors")));_ = CheckAutomaticUpdatesAsync();}
     private static string Format(double? v,string unit)=>v.HasValue?v.Value.ToString("F1",CultureInfo.CurrentCulture)+" "+unit:"Indisponible";
     private void Accept(Snapshot s)
     {
@@ -260,6 +260,7 @@ public sealed partial class MainViewModel : INotifyPropertyChanged,IAsyncDisposa
     /// <summary>Fermeture : chaque étape est isolée pour que la session soit enregistrée et les processus enfants arrêtés quoi qu'il arrive.</summary>
     public async ValueTask DisposeAsync()
     {
+        usageTimer.Stop();await usage.DisposeAsync();usageHttp.Dispose();
         shuttingDown=true;L.Current.Changed-=OnLanguageChanged;gameTimer.Stop();updateTimer.Stop();updateRequest?.Cancel();
         widget?.Close();
         await Safe(async()=>await lifetime.CancelAsync());
